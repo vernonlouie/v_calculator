@@ -1,0 +1,67 @@
+/*  Calculator project version0.1    Vernon Louie    C11.16      November 22, 2016   */
+
+.container1 {
+    height:             80vh;
+    width:              80vw;
+    background-color:   darkgray;
+    margin:             auto;
+}
+
+.display {
+    height:             19%;
+    width:              90%;
+    background-color:   lightblue;
+    margin:             auto;
+    margin-bottom:      0.5em;
+    text-align:         right;
+}
+
+.button_area {
+    height:             79%;
+    width:              90%;
+    background-color:   hotpink;
+    margin:             auto;
+}
+
+.button {
+    height:             99%;
+    background-color:   lightpink;
+}
+
+.button_row {
+    height:             20%;
+    margin:             0.1em;
+}
+
+.special_button {
+    height:             98%;
+    width:              98%;
+    background-color:   blue;
+    display:            inline-block;
+    text-align:         center;
+    color:              white;
+    border-radius:      2em;
+}
+
+.number {
+    height:             98%;
+    width:              98%;
+    background-color:   lightyellow;
+    display:            inline-block;
+    text-align:         center;
+    border-radius:      2em;
+}
+
+.math_operator {
+    height:             98%;
+    width:              98%;
+    background-color:   red;
+    display:            inline-block;
+    text-align:         center;
+    color:              white;
+    border-radius:      2em;
+}
+
+p {
+    margin-top:         2em;
+}
