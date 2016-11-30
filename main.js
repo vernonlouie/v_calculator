@@ -1,56 +1,97 @@
 /* Calculator project v0.5      Vernon Louie    C11.16      November 25, 2016 */
 
+var array1 = [" "];
+var index = 0;
+
 $(document).ready(function () {
-    $(".button").click(button_clicked);     // Call function card_clicked when clicking on a card
-    $(".reset").click(reset_clicked);   // Call function reset_clicked when clicking on the reset button
+    $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button
+    $(".operator").click(operator_clicked);     // for any 4 of the operator (/ X - +) buttons
+    $(".equal").click(equal_clicked);           // for equal "=" sign
+    $(".special").click(special_clicked);       // for the clear keys (C and CE)
 });
 
-function gut (abc, def, ghi) {
+function special_clicked () {
+    var clearKey = $(this).text();
+    clearKey = clearKey.trim();
 
-    $(".container1 .display").text(abc);
-
-}
-
-gut("calculated", 7, 8);
-
-function button_clicked () {
-    $(this).;
-
-    if (first_card_clicked === null) {
-        first_card_clicked = this;
+    if (clearKey === "C") {
+        // console.log("far");          // we are basically starting over, so reset values to a starting condition
+        index = 0;
+        array1 = [" "];
+        $(".display > h4").remove();    // destroys the h4 elements in the display
+    } else {
+        $("h4:last-child").text(" ");   // removes text from the last h4
+        array1[index] = " ";            // also need to clear out the contents of the array cell
     }
-    else {
-        second_card_clicked = this;
+} // end of function special_clicked
 
-        attempts++;
-        accuracy = match_counter / attempts;
-        display_stats();
+function equal_clicked () {
+    var num1 = Number(array1[0]);
+    var num2 = Number(array1[2]);
+    mathOper = array1[1];
 
-        var first_img = $(first_card_clicked).parent().children(".front").find("img").attr('src');
-        var second_img = $(second_card_clicked).parent().children(".front").find("img").attr('src');
-        // console.log("attempts: ", attempts);
+    var result;
+    console.log("num1: " + num1 + "  num2: " + num2 + "  mathOper: " + mathOper);
 
-        if (first_img == second_img) {
-            match_counter++;
-            accuracy = match_counter / attempts;
-            display_stats();
+    if (mathOper === "/") {
+        result = num1 / num2;
+    } else if (mathOper === "X") {
+        result = num1 * num2;
+    } else if (mathOper === "-") {
+        result = num1 - num2;
+    } else {
+        result = num1 + num2;
+    }
 
-            first_card_clicked = null;
-            second_card_clicked = null;
-            // console.log("match counter is: ", match_counter);
+    var new_h4 = $("<h4>", {
+        text: "= " + result
+    });
+    $(".container1 .display").append(new_h4);
+} // end of function equal_clicked
 
-            if (match_counter === total_possible_matches) {
-                $('#game_area').append("<h3>You have won!  Word to the mother!</h3>");
-            }
-            else {
-                return;
-            } // end of 3rd if block
-        }
-        else {
-            setTimeout(resetTwoCards, 1500);
-            return;
-        } // end of 2nd if block
+function operator_clicked () {
+    var mathOperString = $(this).text();
+    mathOperString = mathOperString.trim();
 
-    } // end of 1st if block
+    // console.log("mathOperString: " + mathOperString);
+    index++;
 
-} // end of function card_clicked
+    var new_h4 = $("<h4>", {
+        text: mathOperString
+    });
+    $(".container1 .display").append(new_h4);
+
+    array1[index] = mathOperString;
+    // console.log("index: " + index + " array1[" + index + "]: " + array1[index]);
+    index++;
+    array1[index] = " ";    // Add empty string to the last position of the array
+} // end of function operator_clicked
+
+function number_clicked () {
+    var numString = $(this).text();
+    numString = numString.trim();   // .trim Removes white space from the string/text.
+
+    // console.log("numString: " + numString);
+    var isItEmpty = array1[index];
+
+    if (isItEmpty === " ") {
+        array1[index] = numString;
+        var new_h4 = $("<h4>", {
+            text: " " + array1[index] + " "
+        });
+        $(".container1 .display").append(new_h4);
+    } else {
+        array1[index] = array1[index] + numString;
+        // console.log("index: " + index + array1[index]);
+        $(".container1 .display h4:last-child").text(array1[index]);
+    }
+
+} // end of function number_clicked
+
+
+
+
+function gut (abc, def, ghi) {
+    var array1 = [" "];
+    $(".container1 .display").text(abc);
+}

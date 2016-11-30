@@ -1,4 +1,13 @@
-/*  Calculator project version0.1    Vernon Louie    C11.16      November 22, 2016   */
+/*  Calculator project version0.5    Vernon Louie    C11.16      November 29, 2016   */
+
+p {
+    /* background-color:   orange; */
+}
+
+h4 {
+    display:            inline-block;
+    border:             1px brown dashed;
+}
 
 .container1 {
     height:             80vh;
@@ -13,7 +22,8 @@
     background-color:   lightblue;
     margin:             auto;
     margin-bottom:      0.5em;
-    text-align:         right;
+    text-align:         left;
+
 }
 
 .button_area {
@@ -33,7 +43,7 @@
     margin:             0.1em;
 }
 
-.special_button {
+.special {
     height:             98%;
     width:              98%;
     background-color:   blue;
@@ -43,7 +53,7 @@
     border-radius:      2em;
 }
 
-.number {
+.number, .equal {
     height:             98%;
     width:              98%;
     background-color:   lightyellow;
@@ -52,7 +62,11 @@
     border-radius:      2em;
 }
 
-.math_operator {
+.green {
+    background-color:   lightgreen;
+}
+
+.operator {
     height:             98%;
     width:              98%;
     background-color:   red;
