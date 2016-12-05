@@ -2,7 +2,6 @@
  * Created by Vernon on 12/2/2016.
  */
 
-var array1 = [" "];
 var index = 0;
 var obj_array = [];
 
@@ -18,13 +17,21 @@ function special_clicked () {
     clearKey = clearKey.trim();
 
     if (clearKey === "C") {
-        // console.log("far");          // we are basically starting over, so reset values to a starting condition
+        for (var j=0; j <= index; ++j) {        // remove all objects/elements from the array
+            obj_array.pop();                    // remove one at a time
+            console.log("obj_array: " + obj_array);
+        }
+
         index = 0;
-        obj_array = [" "];
-        $(".display > h4").remove();    // destroys the h4 elements in the display
+        $(".display > h4").remove();    // destroys all h4 elements in the display
     } else {
-        $("h4:last-child").text(" ");   // removes text from the last h4
-        obj_array.pop() = " ";            // also need to clear out the contents of the array cell
+        obj_array.pop();                // delete the object in the last array position
+        if (index === 0) {
+            index = 0;                  // if clearing the 1st number/object, don't want to go index of -1, since all arrays start at 0
+        } else {
+            index--
+        }
+        $("h4:last-child").remove();    // destroy the last h4 element
     }
 } // end of function special_clicked
 
@@ -37,7 +44,7 @@ function equal_clicked () {
     obj_array.push(just_clicked);
     index++;
 
-    console.log("obj_array: " + obj_array);
+    console.log("in equal_clicked, obj_array: " + obj_array);
 
     var result;
     console.log("mathOper: " + mathOper + "  obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
@@ -71,15 +78,14 @@ function operator_clicked () {
     });
     $(".container1 .display").append(new_h4);
 
-    console.log("a: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
-    // console.log("index: " + index + " array1[" + index + "]: " + array1[index]);
-    // index++;
-    // Add empty string to the last position of the array
+    console.log("in operator_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
 } // end of function operator_clicked
 
 function number_clicked () {
     var numString = $(this).text();
     numString = numString.trim();   // .trim Removes white space from the string/text.
+
+    console.log("in number_clicked, index: " + index + "  obj_array[index]: " + obj_array[index]);
 
     if (obj_array[index] === undefined) {
         var just_clicked = new PunchTemplate ("number", numString);
@@ -90,7 +96,7 @@ function number_clicked () {
         });
         $(".container1 .display").append(new_h4);
 
-        console.log("strange");
+        console.log("number_clicked - undefined");
     } else if (obj_array[index].type === "operator") {
         var just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);
@@ -101,14 +107,14 @@ function number_clicked () {
         });
         $(".container1 .display").append(new_h4);
 
-        console.log("rude");
+        console.log("number_clicked - operator");
     }
     else {
         obj_array[index].value = obj_array[index].value + numString;
         $(".container1 .display h4:last-child").text(obj_array[index].value);
     }
 
-    console.log("a: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
+    console.log("in number_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
 } // end of function number_clicked
 
 function PunchTemplate (type, value) {
@@ -117,7 +123,6 @@ function PunchTemplate (type, value) {
 }
 
 function gut (abc, def, ghi) {
-    var array1 = [" "];
     $(".container1 .display").text(abc);
-}var array1 = [" "];
-var index = 0;
+}
+
