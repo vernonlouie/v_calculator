@@ -1,8 +1,8 @@
-/*  Calculator project version0.5    Vernon Louie    C11.16      November 29, 2016   */
+/*  Calculator project, version1    Vernon Louie    C11.16      December 5, 2016   */
 
-h4 {
+h3 {
     display:            inline-block;
-    border:             1px brown dashed;
+    border:             1px darkmagenta dashed;
 }
 
 .container1 {
@@ -56,7 +56,8 @@ h4 {
     display:            inline-block;
     text-align:         center;
     border-radius:      2em;
-    border:             blue 0.2em solid;
+    border:             gold 0.2em solid;
+    vertical-align:     middle;
 }
 
 .green {
@@ -74,6 +75,6 @@ h4 {
     border:             black 0.2em solid;
 }
 
-h2, h1 {
-    margin-top:         0.5em;
+h1, h2, h3 {
+    vertical-align:     middle;
 }
