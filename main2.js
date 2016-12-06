@@ -10,6 +10,7 @@ $(document).ready(function () {
     $(".special").click(special_clicked);       // for the clear keys (C and CE)
 });
 
+// 4 main functions ***************************************************************************
 function number_clicked () {
     var numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
     numString = numString.trim();       // .trim Removes white space from the string/text.
@@ -21,23 +22,14 @@ function number_clicked () {
         obj_array.push(just_clicked);       // whenever we push to the array, we want to increase index by 1, except when doing the first number
 
         //dynamically create h3 element, place it in the display with the number just clicked
-        var new_h3 = $("<h3>", {
-            text: " " + obj_array[index].value + " "
-        });
-        $(".container1 .display").append(new_h3);
-
+        create_div_text_in_display (obj_array[index].value);
         console.log("number_clicked - undefined");
     } else if (obj_array[index].type === "operator") {  // create an h3 element and object for the new number following a math operator
         var just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);
         ++index;                                        // increase index by 1 to match the newly created object
 
-        //dynamically create h3 element, place it in the display with the number just clicked
-        var new_h3 = $("<h3>", {
-            text: " " + obj_array[index].value + " "
-        });
-        $(".container1 .display").append(new_h3);
-
+        create_div_text_in_display (obj_array[index].value);
         console.log("number_clicked - operator");
     }
     else {  // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
@@ -61,11 +53,8 @@ function operator_clicked () {
         var just_clicked = new PunchTemplate ("operator", mathOperString);  // give the new object a "type" of operator and a "value" of mathOperString
         obj_array.push(just_clicked);
         index++;    // increase index by 1 to stay matched with the just-pushed object
+        create_div_text_in_display (mathOperString);
 
-        var new_h3 = $("<h3>", {
-            text: mathOperString
-        });
-        $(".container1 .display").append(new_h3);
     } else if (mathOperString === array_of_operators[length - 1]) {
         // append operator just clicked to what is already in the "value" property of the object, which should be a string of operators
         obj_array[index].value = obj_array[index].value + mathOperString;
@@ -76,12 +65,8 @@ function operator_clicked () {
 } // end of function operator_clicked
 
 function equal_clicked () {
-    var result;
-    var num1;
-    var num2;
-    var mathOper;
+    var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
     var length = obj_array.length;  // note that I get the length of the array before I push the equal sign onto obj_array; important for the do loop below
-    var temp;
 
     if (obj_array[index].type === "number") {
         rid_decimals_if_any();  // in the number just entered before the equal sign, get rid of any extra decimals if any exist
@@ -89,7 +74,7 @@ function equal_clicked () {
 
     var just_clicked = new PunchTemplate ("equalSign", "=");
     obj_array.push(just_clicked);
-    index++;
+    index++;    // global variable
 
     console.log("in equal_clicked, obj_array: " + obj_array);
     console.log("obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
@@ -99,15 +84,7 @@ function equal_clicked () {
     num2 = Number(obj_array[2].value);
     mathOper = obj_array[1].value;
 
-    if (mathOper === "/") {
-        temp  = num1 / num2;
-    } else if (mathOper === "x") {
-        temp = num1 * num2;
-    } else if (mathOper === "-") {
-        temp = num1 - num2;
-    } else {
-        temp = num1 + num2;
-    }
+    var temp = do_math(mathOper, num1, num2);
 
     // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
     for (var i=3; i < length; i+=2) {
@@ -115,24 +92,13 @@ function equal_clicked () {
         mathOper = obj_array[i].value;
         num2 = Number(obj_array[i+1].value);
 
-        // do 1 math operation at a time
-        if (mathOper === "/") {
-            temp  = num1 / num2;
-        } else if (mathOper === "x") {
-            temp = num1 * num2;
-        } else if (mathOper === "-") {
-            temp = num1 - num2;
-        } else {
-            temp = num1 + num2;
-        }
+        temp = do_math(mathOper, num1, num2);   // do 1 math operation at a time
         console.log("temp: " + temp);
-    }
-    result = temp;
+    } // end of for loop
 
-    var new_h3 = $("<h3>", {
-        text: " = " + result
-    });
-    $(".container1 .display").append(new_h3);
+    result = temp;
+    string_result = "=".concat(result);
+    create_div_text_in_display (string_result);
 } // end of function equal_clicked
 
 function special_clicked () {
@@ -158,6 +124,28 @@ function special_clicked () {
         $("h3:last-child").remove();    // destroy the last h3 element
     }
 } // end of function special_clicked
+// end 4 main functions ***************************************************************************
+
+// sub functions ***************************************************************************
+function do_math (mathOperator, number1, number2) {
+    if (mathOperator === "/") {
+        answer  = number1 / number2;
+    } else if (mathOperator === "x") {
+        answer = number1 * number2;
+    } else if (mathOperator === "-") {
+        answer = number1 - number2;
+    } else {
+        answer = number1 + number2;
+    }
+    return answer;
+}
+
+function create_div_text_in_display (strng) {   //dynamically create h3 element, place it in display with number, operator or '=' just clicked
+    var new_h3 = $("<h3>", {
+        text: " " + strng + " "
+    });
+    $(".container1 .display").append(new_h3);
+}
 
 function rid_decimals_if_any () {   // check if there is more than 1 decimal point in the number at the current index before we push the operator or equal sign onto obj_array
     var decimal_count = 0;
