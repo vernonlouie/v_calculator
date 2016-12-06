@@ -15,62 +15,53 @@ function number_clicked () {
     var numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
     numString = numString.trim();       // .trim Removes white space from the string/text.
 
-    console.log("in number_clicked, index: " + index + "  obj_array[index]: " + obj_array[index]);
+    console.log("numString: " + numString + "  obj_array[index]: " + obj_array[index]);
 
-    if (obj_array[index] === undefined) { // if this is the very first number
+    if (obj_array[index] !== undefined) {           // check for decimal pt if there is a number
+        var thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in 2nd else if conditional below
+    }
+
+    if (obj_array[index] === undefined) {   // if this is the very first number
         var just_clicked = new PunchTemplate ("number", numString);
-        obj_array.push(just_clicked);       // whenever we push to the array, we want to increase index by 1, except when doing the first number
-
-        //dynamically create h3 element, place it in the display with the number just clicked
-        create_div_text_in_display (obj_array[index].value);
-        console.log("number_clicked - undefined");
-    } else if (obj_array[index].type === "operator") {  // create an h3 element and object for the new number following a math operator
+        obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
+        create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
+        console.log("in number_clicked - undefined");
+    } else if (obj_array[index].type === "operator") {  // create a div & text and object for the new number following a math operator
         var just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);
         ++index;                                        // increase index by 1 to match the newly created object
-
         create_div_text_in_display (obj_array[index].value);
-        console.log("number_clicked - operator");
-    }
-    else {  // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
+        console.log("in number_clicked - operator");
+    } else if (numString === "." && thereIsDecimal === true) {  // for multiple decimal points
+        console.log("no decimal point added");          // nothing happens, not adding to obj_array nor appending to current number
+    } else {    // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
         obj_array[index].value = obj_array[index].value + numString;
         $(".container1 .display h3:last-child").text(obj_array[index].value);
     }
-
     console.log("in number_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
 } // end of function number_clicked
+
 
 function operator_clicked () {
     var mathOperString = $(this).text();    // grab the operator from the button text just clicked
     mathOperString = mathOperString.trim();
 
-    var oper_string = obj_array[index].value;
-    var length = oper_string.length;
-    var array_of_operators = oper_string.split[""];     // convert string to array of strings with each string being 1 character long
-
     if (obj_array[index].type === "number") {
-        rid_decimals_if_any();  // in the number just entered before the operator sign, get rid of any extra decimals if any exist
-        var just_clicked = new PunchTemplate ("operator", mathOperString);  // give the new object a "type" of operator and a "value" of mathOperString
-        obj_array.push(just_clicked);
-        index++;    // increase index by 1 to stay matched with the just-pushed object
+        var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
+        obj_array.push(just_clicked);                   // push operator just clicked into obj_array
+        index++;                                        // increase index by 1 to stay matched with the just-pushed object
         create_div_text_in_display (mathOperString);
-
-    } else if (mathOperString === array_of_operators[length - 1]) {
-        // append operator just clicked to what is already in the "value" property of the object, which should be a string of operators
-        obj_array[index].value = obj_array[index].value + mathOperString;
-        $(".container1 .display h3:last-child").text(obj_array[index].value);
+    } else if (obj_array[index].type === "operator") {
+        obj_array[index].value = mathOperString;        // replace the previous operator with the operator just clicked
+        $(".container1 .display h3:last-child").text(obj_array[index].value);   // display the operator just clicked
     }
-
     console.log("in operator_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
 } // end of function operator_clicked
+
 
 function equal_clicked () {
     var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
     var length = obj_array.length;  // note that I get the length of the array before I push the equal sign onto obj_array; important for the do loop below
-
-    if (obj_array[index].type === "number") {
-        rid_decimals_if_any();  // in the number just entered before the equal sign, get rid of any extra decimals if any exist
-    }
 
     var just_clicked = new PunchTemplate ("equalSign", "=");
     obj_array.push(just_clicked);
@@ -97,9 +88,10 @@ function equal_clicked () {
     } // end of for loop
 
     result = temp;
-    string_result = "=".concat(result);
+    string_result = "=".concat(result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
     create_div_text_in_display (string_result);
 } // end of function equal_clicked
+
 
 function special_clicked () {
     var clearKey = $(this).text();
@@ -112,7 +104,6 @@ function special_clicked () {
         }
 
         index = 0;                      // set the index back to the beginning position
-
         $(".display > h3").remove();    // destroys all h3 elements in the display
     } else { // CE button
         obj_array.pop();                // delete the object in the last array position
@@ -124,6 +115,7 @@ function special_clicked () {
         $("h3:last-child").remove();    // destroy the last h3 element
     }
 } // end of function special_clicked
+
 // end 4 main functions ***************************************************************************
 
 // sub functions ***************************************************************************
@@ -146,6 +138,39 @@ function create_div_text_in_display (strng) {   //dynamically create h3 element,
     });
     $(".container1 .display").append(new_h3);
 }
+
+function checkForDecimal () {
+    var array_of_stringNumber = (obj_array[index].value).split("");
+    var length = array_of_stringNumber.length;
+
+    for (var i=0; i < length; ++i) {
+        if (array_of_stringNumber[i] ===  ".") {
+            console.log("true");
+            return true;
+        }
+    }
+    return false;
+}
+
+function PunchTemplate (type, value) {  // PunchTemplate as in punching a button
+    this.type = type;       // type can be number, operator or equalSign
+    this.value = value;     // value should be the value of the button just clicked
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************          Functions that I once used
 
 function rid_decimals_if_any () {   // check if there is more than 1 decimal point in the number at the current index before we push the operator or equal sign onto obj_array
     var decimal_count = 0;
@@ -182,7 +207,5 @@ function rid_decimals_if_any () {   // check if there is more than 1 decimal poi
     }
 }
 
-function PunchTemplate (type, value) {  // PunchTemplate as in punching a button
-    this.type = type;       // type can be number, operator or equalSign
-    this.value = value;     // value should be the value of the button just clicked
-}
+*/
+
