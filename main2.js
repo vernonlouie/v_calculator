@@ -2,6 +2,9 @@
 
 var index = 0;
 var obj_array = [];
+var temp_array = [];
+var global_result;
+var multi_op_index;
 
 $(document).ready(function () {
     $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
@@ -66,34 +69,50 @@ function equal_clicked () {
     var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
     var length = obj_array.length;  // note that I get the length of the array before I push the equal sign onto obj_array; important for the do loop below
 
-    var just_clicked = new PunchTemplate ("equalSign", "=");
-    obj_array.push(just_clicked);
-    index++;    // global variable
+    if (obj_array[index].type === "equalSign") {
+        console.log("A: " + obj_array[multi_op_index].value + "  B: " + global_result + "  C: " + obj_array[multi_op_index + 1].value);
+        num1 = Number(global_result);
+        mathOper = obj_array[multi_op_index].value;
+        num2 = Number(obj_array[multi_op_index + 1].value);
 
-    console.log("in equal_clicked, obj_array: " + obj_array);
-    console.log("obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
+        global_result = do_math(num1, mathOper, num2);
 
-    // always calculate result of first 2 numbers if there is more than 1 math operator and store it into temp
-    num1 = Number(obj_array[0].value);
-    num2 = Number(obj_array[2].value);
-    mathOper = obj_array[1].value;
+        console.log("global_result: " + global_result);
 
-    var temp = do_math(mathOper, num1, num2);
+        string_result = "=".concat(global_result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
+        create_div_text_in_display (string_result);
+    } else {
+        var just_clicked = new PunchTemplate ("equalSign", "=");
+        obj_array.push(just_clicked);
+        index++;    // global variable
 
+        console.log("in equal_clicked, obj_array: " + obj_array);
+        console.log("obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
 
-    // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
-    for (var i=3; i < length; i+=2) {
-        num1 = temp;
-        mathOper = obj_array[i].value;
-        num2 = Number(obj_array[i+1].value);
+        // always calculate result of first 2 numbers if there is more than 1 math operator and store it into temp
+        num1 = Number(obj_array[0].value);
+        mathOper = obj_array[1].value;
+        num2 = Number(obj_array[2].value);
 
-        temp = do_math(mathOper, num1, num2);   // do 1 math operation at a time
-        console.log("temp: " + temp);
-    } // end of for loop
+        var temp = do_math(num1, mathOper, num2);
 
-    result = temp;
-    string_result = "=".concat(result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
-    create_div_text_in_display (string_result);
+        // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
+        for (i=3; i < length; i+=2) {
+            num1 = temp;
+            mathOper = obj_array[i].value;
+            num2 = Number(obj_array[i+1].value);
+
+            temp = do_math(num1, mathOper, num2);   // do 1 math operation at a time
+            console.log("temp: " + temp);
+        } // end of for loop
+
+        result = temp;
+        global_result = result;
+        multi_op_index = i - 2;
+
+        string_result = "=".concat(result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
+        create_div_text_in_display (string_result);
+    }
 } // end of function equal_clicked
 
 
@@ -123,7 +142,7 @@ function special_clicked () {
 // end 4 main functions ***************************************************************************
 
 // sub functions ***************************************************************************
-function do_math (mathOperator, number1, number2) {
+function do_math (number1, mathOperator, number2) {
     if (mathOperator === "/") {
         answer  = number1 / number2;
     } else if (mathOperator === "x") {
@@ -131,6 +150,7 @@ function do_math (mathOperator, number1, number2) {
     } else if (mathOperator === "-") {
         answer = number1 - number2;
     } else {
+        console.log("mathOperator: " + mathOperator + "  number1: " + number1 + "  number2: " + number2);
         answer = number1 + number2;
     }
     return answer;
