@@ -4,6 +4,7 @@ var index = 0;
 var obj_array = [];
 var temp_array = [];
 var global_result;
+var global_temp;
 var multi_op_index;
 
 $(document).ready(function () {
@@ -18,7 +19,7 @@ function number_clicked () {
     var numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
     numString = numString.trim();       // .trim Removes white space from the string/text.
 
-    console.log("numString: " + numString + "  obj_array[index]: " + obj_array[index]);
+    // console.log("numString: " + numString + "  obj_array[index]: " + obj_array[index]);
 
     if (obj_array[index] !== undefined) {           // check for decimal pt if there is a number
         var thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in 2nd else if conditional below
@@ -28,7 +29,7 @@ function number_clicked () {
         var just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
-        console.log("in number_clicked - undefined");
+        // console.log("in number_clicked - undefined");
     } else if (obj_array[index].value === "/" && numString === "0") {
         create_div_text_in_display (numString);
         create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
@@ -37,8 +38,8 @@ function number_clicked () {
         obj_array.push(just_clicked);
         ++index;                                        // increase index by 1 to match the newly created object
         create_div_text_in_display (obj_array[index].value);
-        console.log("in number_clicked - operator");
-    } else if (numString === "." && thereIsDecimal === true) {  // for multiple decimal points
+        // console.log("in number_clicked - operator");
+    } else if (numString === "." && thereIsDecimal === true) {  // case: multiple decimal points
         console.log("no decimal point added");          // nothing happens, not adding to obj_array nor appending to current number
     } else {    // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
         obj_array[index].value = obj_array[index].value + numString;
@@ -57,20 +58,26 @@ function operator_clicked () {
         obj_array.push(just_clicked);                   // push operator just clicked into obj_array
         index++;                                        // increase index by 1 to stay matched with the just-pushed object
         create_div_text_in_display (mathOperString);
-    } else if (obj_array[index].type === "operator") {
+    } else if (obj_array[index].type === "operator") {  // case: multiple and changing operation keys
         obj_array[index].value = mathOperString;        // replace the previous operator with the operator just clicked
         $(".container1 .display h3:last-child").text(obj_array[index].value);   // display the operator just clicked
+    } else {
+        var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
+        obj_array.push(just_clicked);                   // push operator just clicked into obj_array
+        index++;                                        // increase index by 1 to stay matched with the just-pushed object
+        create_div_text_in_display (mathOperString);
     }
-    console.log("in operator_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
+    // console.log("in operator_clicked, obj_array[index].value: " + obj_array[index].value + "  obj_array: " + obj_array + "  index: " + index);
 } // end of function operator_clicked
 
 
 function equal_clicked () {
     var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
-    var length = obj_array.length;  // note that I get the length of the array before I push the equal sign onto obj_array; important for the do loop below
+    var length = obj_array.length - 1;  // note that I get the length of the array before I push the equal sign onto obj_array; important for the do loop below
 
-    if (obj_array[index].type === "equalSign") {
+    if (obj_array[index].type === "equalSign") {    // case: operation repeat (consecutive equals signs)
         console.log("A: " + obj_array[multi_op_index].value + "  B: " + global_result + "  C: " + obj_array[multi_op_index + 1].value);
+        // ensure numbers, not strings, are being manipulated otherwise the + sign in function do_math will concatenate, not add
         num1 = Number(global_result);
         mathOper = obj_array[multi_op_index].value;
         num2 = Number(obj_array[multi_op_index + 1].value);
@@ -87,17 +94,18 @@ function equal_clicked () {
         index++;    // global variable
 
         console.log("in equal_clicked, obj_array: " + obj_array);
-        console.log("obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
+        // console.log("obj_array: " + obj_array[0].value + " " + obj_array[1].value + " " + obj_array[2].value);
 
         // always calculate result of first 2 numbers if there is more than 1 math operator and store it into temp
         num1 = Number(obj_array[0].value);
         mathOper = obj_array[1].value;
         num2 = Number(obj_array[2].value);
 
-        var temp = do_math(num1, mathOper, num2);
+        var temp = do_math (num1, mathOper, num2);
+        global_temp = temp;
 
         // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
-        for (i=3; i < length; i+=2) {
+        for (i=3; i < length; i+=2) { // case: successive multi operation
             num1 = temp;
             mathOper = obj_array[i].value;
             num2 = Number(obj_array[i+1].value);
@@ -106,13 +114,21 @@ function equal_clicked () {
             console.log("temp: " + temp);
         } // end of for loop
 
-        result = temp;
-        global_result = result;
-        multi_op_index = i - 2;
+        if (obj_array[index - 1].type === "operator") { // case: operation rollover
+            global_temp = do_math(global_temp, mathOper, global_temp);
+            console.log("operator global_temp: " + global_temp);
 
-        string_result = "=".concat(result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
-        create_div_text_in_display (string_result);
-    }
+            string_result = "=".concat(global_temp);
+            create_div_text_in_display (string_result);
+        } else {
+            result = temp;
+            global_result = result;
+            multi_op_index = i - 2;     // multi_op_index is needed for operation repeat
+
+            string_result = "=".concat(result);
+            create_div_text_in_display (string_result);
+        } // end of 2nd else
+    } // end of 1st else
 } // end of function equal_clicked
 
 
@@ -153,6 +169,11 @@ function do_math (number1, mathOperator, number2) {
         console.log("mathOperator: " + mathOperator + "  number1: " + number1 + "  number2: " + number2);
         answer = number1 + number2;
     }
+    return answer;
+}
+
+function calculate_first_pair () {
+
     return answer;
 }
 
