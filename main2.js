@@ -26,6 +26,9 @@ function number_clicked () {
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
         console.log("in number_clicked - undefined");
+    } else if (obj_array[index].value === "/" && numString === "0") {
+        create_div_text_in_display (numString);
+        create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
     } else if (obj_array[index].type === "operator") {  // create a div & text and object for the new number following a math operator
         var just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);
@@ -76,6 +79,7 @@ function equal_clicked () {
     mathOper = obj_array[1].value;
 
     var temp = do_math(mathOper, num1, num2);
+
 
     // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
     for (var i=3; i < length; i+=2) {
