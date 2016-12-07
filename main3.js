@@ -1,10 +1,13 @@
-/* Calculator project, version1     Vernon Louie    C11.16      December 6, 2016 */
+/* Calculator project, version1     Vernon Louie    C11.16      December 7, 2016 */
 
 var index = 0;              // index should always point to the last object in obj_array
 var obj_array = [];         // obj_array is the array that holds the objects of type number, operator or equalSign
+
 var global_result;          // used only for "operation repeat" in equal_clicked function
 var multi_op_index;         // used only for "operation repeat" in equal_clicked function
-var global_temp = -7.77;    // when global_temp =-7.77, it's not used; used only for "operation rollover" in equal_clicked function
+
+var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
+var rollover_result;        // used only for "operation rollover" in equal_clicked function
 
 $(document).ready(function () {
     $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
@@ -100,45 +103,18 @@ function equal_clicked () { // clicking "=" usually means "do the math"
             create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
         }
 
-        // case: order of operations (Extra Operations)
-        for (var a=0; a <= length; ++a) {   // look for "+" or "-"; the logic below doesn't work if there are no "+"s or "-"s in obj_array
-            if (obj_array[a].value === "+" || obj_array[a].value === "-") { // if only "/" and/or "x", then bypass the following for loop
-
-                for (var a = 0; a <= length; a) {   // look for division and multiplication
-                    console.log("a: " + a + "  obj_array[a].value: " + obj_array[a].value + "  length: " + length);
-                    if (obj_array[a].value === "/" || obj_array[a].value === "x") {
-                        num1 = obj_array[a - 1].value;
-                        mathOper = obj_array[a].value;
-                        num2 = obj_array[a + 1].value;
-                        mini_result = do_math(num1, mathOper, num2);
-
-                        obj_array[a - 1].value = mini_result; // insert mini_result of the division or multiplication, into the slot of what was num1
-
-                        for (var b = a; b < length; ++b) {  // now for remaining objects to the right of what was num1, shift objects to the left 2 positions
-                            obj_array[b] = obj_array[b + 2];
-                            console.log("b: " + b);
-                        } // end of inner most loop
-                        obj_array.pop();    // destroy the last 2 objects from obj_array since they are no longer needed
-                        obj_array.pop();
-                        console.log("obj_array: " + obj_array);
-                        length = length - 2;
-                        // "a" doesn't increment, since the array has shifted underneath so to speak
-                    } else {
-                        a++;
-                    }
-
-                    index = a;  // because obj_array has been shortened, index needs to be reset to "a" to target the last obj, which should be the "="
-                    num1 = Number(obj_array[0].value);  //
-                    mathOper = obj_array[1].value;
-                    num2 = Number(obj_array[2].value);
-                } // end of middle for loop
-            } // end of 1st if
-        } // end of outer for loop
+        if (length > 3) {   // don't bother with order of operations if there is only 1 operator
+            var first3_array = order_of_ops();      // case: order of operations (Extra Operations)
+            num1 = first3_array[0];                 // because obj_array might have been changed by function order_of_ops
+            mathOper = first3_array[1];             // num1, mathOper, num2 and length need to be reassigned just in case
+            num2 = first3_array[2];
+            length = obj_array.length - 1;
+        }
 
         var temp = do_math (num1, mathOper, num2);
 
-        if (global_temp === -7.77) {   // if global_temp hasn't been used yet, set it equal to temp; if still using, use global_temp as is
-            global_temp = temp;
+        if (flag_for_op_rollover === null) {   // if rollover_result hasn't been used yet (this is the 1st rollover), set it equal to temp; if still using (for 2nd and any subsequent rollovers), use rollover_result as, that is, as it was calculated in the if statement below
+            rollover_result = temp;
         }
 
         // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed
@@ -152,13 +128,14 @@ function equal_clicked () { // clicking "=" usually means "do the math"
         } // end of for loop
 
         if (obj_array[index - 1].type === "operator") { // case: operation rollover (Comprehensive Operations)
-            global_temp = do_math(global_temp, mathOper, global_temp);
-            console.log("operator global_temp: " + global_temp);
-            string_result = "=".concat(global_temp);
+            rollover_result = do_math(rollover_result, mathOper, rollover_result);
+            console.log("operator rollover_result: " + rollover_result);
+            string_result = "=".concat(rollover_result);
             create_div_text_in_display (string_result);
+            flag_for_op_rollover = true;
         } else {
-            result = temp;
-            global_result = result;
+            result = temp;              // result is for normal operations
+            global_result = result;     // global_result is for operation repeat
             multi_op_index = i - 2;     // multi_op_index is needed for operation repeat
             string_result = "=".concat(result);
             create_div_text_in_display (string_result);
@@ -174,9 +151,10 @@ function special_clicked () {
     if (clearKey === "C") {
         for (var j=0; j <= index; ++j) {
             obj_array.pop();            // remove all objects/elements from the array, but removes them 1 at a time
+            console.log("obj_array: " + obj_array); // using obj_array = [] leaves obj_array with definition and I want it to be undefined
         }
 
-        global_temp = -7.77;            // set global_temp to "unused"
+        flag_for_op_rollover = null;            // set flag_for_op_rollover to "unused"
         index = 0;                      // set the index back to the beginning position
         $(".display > h3").remove();    // destroys all h3 elements in the display
     } else {                        // CE button
@@ -192,7 +170,7 @@ function special_clicked () {
 
 // end 4 main functions ***************************************************************************
 
-// sub functions ***************************************************************************
+// 4 sub functions and 1 constructor, PunchTemplate ***************************************************************************
 function do_math (number1, mathOperator, number2) {
     if (mathOperator === "/") {
         answer  = number1 / number2;
@@ -204,6 +182,52 @@ function do_math (number1, mathOperator, number2) {
         answer = number1 + number2;     // ensure that number1 & number2 are numbers and not strings, otherwise concatenation instead of addition
     }
     return answer;
+}
+
+function order_of_ops () {
+    var num1;   var num2;   var mathOper;   var mini_result;    var array = [];
+    var length = obj_array.length - 1;
+    console.log ("length: " + length);
+
+    for (var j=0; j <= length; ++j) {   // look for "+" or "-"; the logic below doesn't work if there are no "+"s or "-"s in obj_array
+        console.log("j: " + j);
+        if (obj_array[j].value === "+" || obj_array[j].value === "-") { // if only "/" and/or "x", then bypass the following for loop
+
+            for (var a = 0; a <= length; a) {   // look for division and multiplication
+                console.log("a: " + a + "  obj_array[a].value: " + obj_array[a].value + "  length: " + length);
+                if (obj_array[a].value === "/" || obj_array[a].value === "x") {
+                    num1 = obj_array[a - 1].value;
+                    mathOper = obj_array[a].value;
+                    num2 = obj_array[a + 1].value;
+                    mini_result = do_math(num1, mathOper, num2);
+
+                    obj_array[a - 1].value = mini_result; // insert mini_result of the division or multiplication, into the slot of what was num1
+
+                    for (var b = a; b < length; ++b) {  // now for remaining objects to the right of what was num1, shift objects to the left 2 positions
+                        obj_array[b] = obj_array[b + 2];
+                        console.log("b: " + b);
+                    } // end of inner most loop
+
+                    obj_array.pop();    // destroy the last 2 objects from obj_array since they are no longer needed; shorten obj_array
+                    obj_array.pop();
+                    console.log("obj_array: " + obj_array);
+                    length = length - 2;
+                    // "a" doesn't increment, since the array has shifted underneath so to speak
+                } else {
+                    a++;
+                }
+            } // end of middle for loop
+            if (mini_result !== undefined) {    // if mini_result has value (that is, obj_array has been shortened), then...
+                index = a;  // if obj_array has been shortened, index needs to be reset to "a" to target the last obj, which should be the "="
+            }
+        } // end of 1st if
+    } // end of outer for loop
+    num1 = Number(obj_array[0].value);  //
+    mathOper = obj_array[1].value;      // get num1, mathOper and num2 for revamped obj_array and return to function equal_clicked
+    num2 = Number(obj_array[2].value);  //
+
+    array = [num1, mathOper, num2]  // "a" doesn't need to be returned, since it is a global variable
+    return array;
 }
 
 function create_div_text_in_display (strng) {   //dynamically create h3 element, place it in display with number, operator or '=' just clicked
@@ -232,59 +256,7 @@ function PunchTemplate (type, value) {  // PunchTemplate as in punching a button
 
 
 
+/*************************************          Functions that I once used          **********************/
 
 
-
-
-
-
-
-
-
-
-
-/*************************************          Functions that I once used
-
-function rid_decimals_if_any () {   // check if there is more than 1 decimal point in the number at the current index before we push the operator or equal sign onto obj_array
-    var decimal_count = 0;
-    var num_string = (obj_array[index].value);
-    var string_length = num_string.length;      // 1st get length of string (number is really a string)
-    console.log("string_length: " + string_length);
-
-    var array_of_string = num_string.split("");     // convert string to array of strings with each string being 1 character long
-
-    // cycle through the string to check for and count decimal points
-    for (var i=0; i < string_length; ++i) {
-        if (array_of_string[i] === ".") {
-            decimal_count++;        // if there is a decimal point, increment by 1
-            console.log("decimal_count: " + decimal_count);
-        }
-    }
-
-    // if more than 1 decimal point, grab 2 substrings before and after the decimal points, but include the 1st decimal point only in temp_string1
-    if (decimal_count > 1) {
-        var first_decimal_position = num_string.indexOf(".");   // locate the 1st decimal point's position within the string
-        console.log("first: " + first_decimal_position);
-
-        // get 1st part that includes the decimal point
-        var temp_string1 = num_string.substr(0,first_decimal_position + 1);
-        // get the 2nd part that gets the string after the decimal points to the end of the string
-        var temp_string2 = num_string.substr(first_decimal_position + decimal_count, string_length);
-
-        console.log("temp_string1: " + temp_string1 + "  temp_string2: " + temp_string2);
-        num_string = temp_string1.concat(temp_string2); // concatenate the 2 parts into 1 string
-        console.log(num_string);
-        console.log("obj_array: " + obj_array);
-        obj_array[index].value = num_string;            // substitute the string minus the decimal points back into obj_array
-        console.log("obj_array: " + obj_array[index].value);
-    }
-}
-
- // } else if (obj_array[index].type === "number") {
-    //     var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
-    //     obj_array.push(just_clicked);                   // push operator just clicked into obj_array
-    //     index++;                                        // increase index by 1 to stay matched with the just-pushed object
-    //     create_div_text_in_display (mathOperString);
-
-*/
 
