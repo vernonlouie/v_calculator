@@ -1,10 +1,10 @@
-/* Calculator project, version1     Vernon Louie    C11.16      December 5, 2016 */
+/* Calculator project, version1     Vernon Louie    C11.16      December 6, 2016 */
 
-var index = 0;
-var obj_array = [];
-var global_result;
-var global_temp = -7.77;
-var multi_op_index;
+var index = 0;              // index should always point to the last object in obj_array
+var obj_array = [];         // obj_array is the array that holds the objects of type number, operator or equalSign
+var global_result;          // used only for "operation repeat" in equal_clicked function
+var multi_op_index;         // used only for "operation repeat" in equal_clicked function
+var global_temp = -7.77;    // when global_temp =-7.77, it's not used; used only for "operation rollover" in equal_clicked function
 
 $(document).ready(function () {
     $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
@@ -47,17 +47,12 @@ function operator_clicked () {
     var mathOperString = $(this).text();    // grab the operator from the button text just clicked
     mathOperString = mathOperString.trim();
 
-    if (obj_array[index] === undefined) {               // case: premature operation (ADVANCED Operations)
+    if (obj_array[index] === undefined) {               // case: premature operation (ADVANCED Operations); can't start with operator
         create_div_text_in_display ("need number!");    // do nothing except display message
-    } else if (obj_array[index].type === "number") {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
-        obj_array.push(just_clicked);                   // push operator just clicked into obj_array
-        index++;                                        // increase index by 1 to stay matched with the just-pushed object
-        create_div_text_in_display (mathOperString);
     } else if (obj_array[index].type === "operator") {  // case: multiple and changing operation keys (Comprehensive Operations)
         obj_array[index].value = mathOperString;        // replace the previous operator with the operator just clicked
         $(".container1 .display h3:last-child").text(obj_array[index].value);   // display the operator just clicked
-    } else {
+    } else {                                            // previous button clicked is a number or equal sign
         var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
         obj_array.push(just_clicked);                   // push operator just clicked into obj_array
         index++;                                        // increase index by 1 to stay matched with the just-pushed object
@@ -66,9 +61,9 @@ function operator_clicked () {
 } // end of function operator_clicked
 
 
-function equal_clicked () {
-    var divMult_position; var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
-    var length = obj_array.length - 1;  // get the length of the array before I push the equal sign onto obj_array; important for the do loop below
+function equal_clicked () { // clicking "=" usually means "do the math"
+    var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
+    var length = obj_array.length - 1;
 
     if (obj_array[index] === undefined) {   // case: missing operands (ADVANCED Operations)
         create_div_text_in_display ("Ready");
@@ -79,25 +74,26 @@ function equal_clicked () {
         mathOper = obj_array[multi_op_index].value;
         num2 = Number(obj_array[multi_op_index + 1].value);
 
-        global_result = do_math(num1, mathOper, num2);
-        string_result = "=".concat(global_result);     // concatenate "=" to result so it shows up in 1 div element instead of in separate divs
-        create_div_text_in_display (string_result);
+        global_result = do_math(num1, mathOper, num2);  // it's a global variable, because its value is needed for the next time thru this branch
+        string_result = "=".concat(global_result);      // concatenate "=" to result so it displays in 1 div element instead of in separate divs
+        create_div_text_in_display (string_result);     // note that global_result is not pushed onto obj_array
     } else {
         var just_clicked = new PunchTemplate ("equalSign", "=");
         obj_array.push(just_clicked);
         index++;    // global variable
+
         // always calculate result of first 2 numbers if there is more than 1 math operator and store it into temp
-        num1 = Number(obj_array[0].value);
+        num1 = Number(obj_array[0].value);  // for all cases
 
         if (obj_array[1].type !== "operator") { // case: missing operation (ADVANCED Operations)
-            mathOper = "x";     // this is case where you have only a number and an equal sign and we return num1
+            mathOper = "x";     // this is the case where you have only a number and an equal sign and we return num1
             num2 = 1;
-        } else {                // normal operation
+        } else {                // normal operations
             mathOper = obj_array[1].value;
             num2 = Number(obj_array[2].value);
         }
 
-        if (isNaN(num2)) {  // case: partial operand (ADVANCED Operations). if num2 is not a number, then...
+        if (isNaN(num2)) {  // case: partial operand (ADVANCED Operations); if num2 is not a number, then...
             num2 = num1;
             obj_array.push(obj_array[0]);
             ++index;
@@ -105,8 +101,9 @@ function equal_clicked () {
         }
 
         // case: order of operations (Extra Operations)
-        for (var a=0; a <= length; ++a) {   // look for "+" or "-"; the logic below doesn't work if there are no "+"s or "-"s
-            if (obj_array[a].value === "+" || obj_array[a].value === "-") {
+        for (var a=0; a <= length; ++a) {   // look for "+" or "-"; the logic below doesn't work if there are no "+"s or "-"s in obj_array
+            if (obj_array[a].value === "+" || obj_array[a].value === "-") { // if only "/" and/or "x", then bypass the following for loop
+
                 for (var a = 0; a <= length; a) {   // look for division and multiplication
                     console.log("a: " + a + "  obj_array[a].value: " + obj_array[a].value + "  length: " + length);
                     if (obj_array[a].value === "/" || obj_array[a].value === "x") {
@@ -131,7 +128,7 @@ function equal_clicked () {
                     }
 
                     index = a;  // because obj_array has been shortened, index needs to be reset to "a" to target the last obj, which should be the "="
-                    num1 = Number(obj_array[0].value);
+                    num1 = Number(obj_array[0].value);  //
                     mathOper = obj_array[1].value;
                     num2 = Number(obj_array[2].value);
                 } // end of middle for loop
@@ -204,7 +201,7 @@ function do_math (number1, mathOperator, number2) {
     } else if (mathOperator === "-") {
         answer = number1 - number2;
     } else {
-        answer = number1 + number2;
+        answer = number1 + number2;     // ensure that number1 & number2 are numbers and not strings, otherwise concatenation instead of addition
     }
     return answer;
 }
@@ -217,15 +214,15 @@ function create_div_text_in_display (strng) {   //dynamically create h3 element,
 }
 
 function checkForDecimal () {   // case: multiple decimals (Comprehensive Operations)
-    var array_of_stringNumber = (obj_array[index].value).split("");
+    var array_of_stringNumber = (obj_array[index].value).split(""); // returns an array of 1-character strings; arrays easier to deal with
     var length = array_of_stringNumber.length;
 
     for (var i=0; i < length; ++i) {
         if (array_of_stringNumber[i] ===  ".") {
-            return true;
+            return true;    // true means there is a decimal in the string
         }
     }
-    return false;
+    return false;   // false means there is no decimal point in the string
 }
 
 function PunchTemplate (type, value) {  // PunchTemplate as in punching a button
@@ -282,6 +279,12 @@ function rid_decimals_if_any () {   // check if there is more than 1 decimal poi
         console.log("obj_array: " + obj_array[index].value);
     }
 }
+
+ // } else if (obj_array[index].type === "number") {
+    //     var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
+    //     obj_array.push(just_clicked);                   // push operator just clicked into obj_array
+    //     index++;                                        // increase index by 1 to stay matched with the just-pushed object
+    //     create_div_text_in_display (mathOperString);
 
 */
 
