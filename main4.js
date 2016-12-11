@@ -1,8 +1,4 @@
-/**
- * Created by Vernon on 12/7/2016.
- */
-
-/* Calculator project, version1     Vernon Louie    C11.16      December 7, 2016 */
+/* Calculator project, version1.1     Vernon Louie    C11.16      December 11, 2016 */
 
 var index = 0;              // index should always point to the last object in obj_array
 var obj_array = [];         // obj_array is the array that holds the objects of type number, operator or equalSign
@@ -10,8 +6,8 @@ var obj_array = [];         // obj_array is the array that holds the objects of 
 var global_result;          // used only for "operation repeat" in equal_clicked function
 var multi_op_index;         // used only for "operation repeat" in equal_clicked function
 
-var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
 var rollover_result;        // used only for "operation rollover" in equal_clicked function
+var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
 
 $(document).ready(function () {
     $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
@@ -22,25 +18,27 @@ $(document).ready(function () {
 
 // 4 main functions ***************************************************************************
 function number_clicked () {
-    var numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
+    /* boolean variables */ var thereIsDecimal;
+    /* number variables */  /* none */
+    /* object variables */  var just_clicked;
+    /* string variables */  var numString;
+
+    numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
     numString = numString.trim();       // .trim Removes white space from the string/text.
 
-    if (obj_array[index] !== undefined) {           // case: multiple decimals (Comprehensive Operations). check for decimal pt if there is a number
-        var thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in 2nd else if conditional below
+    if (obj_array[index] !== undefined) {       // case: multiple decimals (Comprehensive Operations). check for decimal pt if there is a number
+        thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in last "else if" conditional below
     }
 
     if (obj_array[index] === undefined) {   // if this is the very first number
-        var just_clicked = new PunchTemplate ("number", numString);
+        just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
     } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
         create_div_text_in_display (numString);
         create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
-    } else if (obj_array[index].type === "operator") {  // create a div & text and object for the new number following a math operator
-        var just_clicked = new PunchTemplate ("number", numString);
-        obj_array.push(just_clicked);
-        ++index;                                        // increase index by 1 to match the newly created object
-        create_div_text_in_display (obj_array[index].value);
+    } else if (obj_array[index].type === "operator") {
+        cOPID("number", numString);
     } else if (numString === "." && thereIsDecimal === true) {  // case: multiple decimal points
         console.log("no decimal point added");          // nothing happens, not adding to obj_array nor appending to current number
     } else {    // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
@@ -51,55 +49,52 @@ function number_clicked () {
 
 
 function operator_clicked () {
-    var mathOperString = $(this).text();    // grab the operator from the button text just clicked
+    /* string variables */  var mathOperString;
+
+    mathOperString = $(this).text();    // grab the operator from the button text just clicked
     mathOperString = mathOperString.trim();
 
     console.log("oper: " + mathOperString);
 
-    if (obj_array[index] === undefined && mathOperString === "(") {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);
-        obj_array.push(just_clicked);                   // push operator just clicked into obj_array
-        index++;                                        // increase index by 1 to stay matched with the just-pushed object
-        create_div_text_in_display (mathOperString);
-    } else if (obj_array[index] === undefined && mathOperString === "-") {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);
-        obj_array.push(just_clicked);
-        index++;
-        create_div_text_in_display (mathOperString);
-    } else if (obj_array[index] === undefined) { // case: premature operation (ADVANCED Operations); can't start with operator
+    if (obj_array[index] === undefined && mathOperString === "()") {    // allow very first character to be "("
+        mathOperString = "(" ;
+        cOPID("operator", mathOperString);
+    } else if (obj_array[index] === undefined) { // case: premature operation (ADVANCED Operations); can't start with +,-,/ or x
         create_div_text_in_display ("need number!");    // do nothing except display message
-    } else if (obj_array[index].type === "operator" && mathOperString === "(" ) {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);
-        obj_array.push(just_clicked);
-        index++;
-        create_div_text_in_display (mathOperString);
-    } else if (obj_array[index].type === "operator" && mathOperString === ")" ) {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);
-        obj_array.push(just_clicked);
-        index++;
-        create_div_text_in_display (mathOperString);
-    } else if (obj_array[index].value = ")" ) {
-        var just_clicked = new PunchTemplate ("operator", mathOperString);
-        obj_array.push(just_clicked);
-        index++;
-        create_div_text_in_display (mathOperString);
+
+    } else if (obj_array[index].value === ")" && mathOperString === "()" ) {        //  ))
+        mathOperString = ")" ;
+        cOPID("operator", mathOperString);
+    } else if (obj_array[index].value === ")" ) {                                   //  )+ or )x or )/ or )-
+        cOPID("operator", mathOperString);
+
+    } else if (obj_array[index].type === "operator" && mathOperString === "()") {   //  (( or +( or -( or x( or /(
+        mathOperString = "(" ;
+        cOPID("operator", mathOperString);
+    } else if (obj_array[index].type === "number" && mathOperString === "()" ) {    //  8)
+        mathOperString = ")" ;
+        cOPID("operator", mathOperString);
+    } else if (obj_array[index].value === "(" ) {
+        console.log("illegal operation");
+        /* this branch is needed to do nothing; otherwise the case where the "(" is followed by a +,-,x or / will fall into the
+           case: multiple and changing operation keys branch (the next "else if" branch); ie, the "(" gets replaced */
+
     } else if (obj_array[index].type === "operator") {  // case: multiple and changing operation keys (Comprehensive Operations)
         obj_array[index].value = mathOperString;        // replace the previous operator with the operator just clicked
         $(".container1 .display h3:last-child").text(obj_array[index].value);   // display the operator just clicked
     } else {                                            // previous button clicked is a number or equal sign
-        var just_clicked = new PunchTemplate ("operator", mathOperString);  // new object is "type" of operator and a "value" of mathOperString
-        obj_array.push(just_clicked);                   // push operator just clicked into obj_array
-        index++;                                        // increase index by 1 to stay matched with the just-pushed object
-        create_div_text_in_display (mathOperString);
+        cOPID("operator", mathOperString);
     }
 } // end of function operator_clicked
 
 
 function equal_clicked () { // clicking "=" usually means "do the math"
-    var result; var num1;   var num2;   var mathOper;   var string_result;  var temp;
-    var length = obj_array.length - 1;
+    /* boolean variables */ var parenGood;
+    /* number variables */  var num1, num2, result, temp,        length = obj_array.length - 1;
+    /* string variables */  var mathOper, string_result;
 
-    check_parentheses();
+    parenGood = check_parentheses();
+    console.log("parenGood: " + parenGood);
 
     if (obj_array[index] === undefined) {   // case: missing operands (ADVANCED Operations)
         create_div_text_in_display ("Ready");   // basically do nothing
@@ -144,7 +139,7 @@ function equal_clicked () { // clicking "=" usually means "do the math"
             length = obj_array.length - 1;
         }
 
-        var temp = do_math (num1, mathOper, num2);
+        temp = do_math (num1, mathOper, num2);
 
         if (flag_for_op_rollover === null) {   // if rollover_result hasn't been used yet (this is the 1st rollover), set it equal to temp; if still using (for 2nd and any subsequent rollovers), use rollover_result as, that is, as it was calculated in the if statement below
             rollover_result = temp;
@@ -203,29 +198,44 @@ function special_clicked () {
 
 // end 4 main functions ***************************************************************************
 
-// 4 sub functions and 1 constructor, PunchTemplate ***************************************************************************
-function check_parentheses () {
-    var flag1 = check_number_of ();
-    // var flag2 = check_first_and_last ();
+// sub functions and 1 constructor, PunchTemplate ***************************************************************************
+function cOPID (tipe, valu) {                           // cOPID = create Object, Push, Increase index, and Display
+    var just_clicked = new PunchTemplate (tipe, valu);  // create new object from constructor
+    obj_array.push(just_clicked);                       // push object just_clicked into obj_array
+    index++;                                            // increase index by 1 to stay matched with the just-pushed object
+    create_div_text_in_display (valu);                  // display operator or number in display area
+}
 
-    if (flag1 === false) {
-        return false;
-    } else {
-        return true;
+function check_parentheses () {
+    var length = obj_array.length;
+
+    for (var h=0; h < length; ++h) {
+        if (obj_array[h].value ===  "(" || obj_array[h] === ")") {
+            console.log("There are parentheses in the equation...proceed to parentheses checks");
+            var parenCountGood = check_number_of ();
+            var parenOrderGood = check_first_and_last ();
+
+            if (parenCountGood === true && parenOrderGood === true) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
 
-function check_number_of () {
+function check_number_of () {   // check that there are an equal number of opening and closing parentheses
     var length = obj_array.length;
     var count = 0;
 
     for (var p=0; p < length; ++p) {
         if (obj_array[p].value ===  "(") {
-            count++;    // increase by 1 if there is a ( "opening parenthesis)"
+            count++;    // increase by 1 if there is a "(" , opening parenthesis
         } else if (obj_array[p].value ===  ")") {
-            count--;    // decrease by 1 if there is a ) "closing parenthesis"
+            count--;    // decrease by 1 if there is a ")" , closing parenthesis
         }
-
         console.log("count: " + count);
     }
 
@@ -236,27 +246,40 @@ function check_number_of () {
     }
 }
 
-// function check_first_and_last () {
-//     var length = obj_array.length;
-//     var count = 0;
-//
-//     // find the 1st (
-//     for (var p=0; p < length; ++p) {
-//         if (obj_array[p].value ===  "(") {
-//             position1 = p;    //
-//         } else if (obj_array[p].value ===  ")") {
-//             position2 = p;    //
-//         }
-//
-//         console.log("first"
-//     }
-//
-//     if (count === 0) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
+function check_first_and_last () {  // check that the 1st and last open and close parentheses are in the correct order
+    var length = obj_array.length;
+    var psn_first_openParen = null, psn_first_closeParen = null, psn_last_openParen = null, psn_last_closeParen = null;
+
+    // find the 1st "(" and 1st ")"
+    for (var p=0; p < length; ++p) {
+        if (obj_array[p].value ===  "(" && psn_first_openParen === null) {
+            psn_first_openParen = p;
+        } else if (obj_array[p].value ===  ")" && psn_first_closeParen === null) {
+            psn_first_closeParen = p;
+        }
+    }
+    console.log("psn_1st_openParen: " + psn_first_openParen + "  psn_1st_closeParen: " + psn_first_closeParen);
+
+    // find the last "(" and last ")"
+    for (var q = length-1; q >= 0; --q) {
+        if (obj_array[q].value ===  "(" && psn_last_openParen === null) {
+            psn_last_openParen = q;
+        } else if (obj_array[q].value ===  ")" && psn_last_closeParen === null) {
+            psn_last_closeParen = q;
+        }
+    }
+    console.log("psn_last_openParen: " + psn_last_openParen + "  psn_last_closeParen: " + psn_last_closeParen);
+
+    if (psn_first_openParen < psn_first_closeParen) {
+        if (psn_last_openParen < psn_last_closeParen) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
 function do_math (number1, mathOperator, number2) {
     if (mathOperator === "/") {
@@ -272,8 +295,10 @@ function do_math (number1, mathOperator, number2) {
 }
 
 function order_of_ops () {
-    var num1;   var num2;   var mathOper;   var mini_result;    var array = [];
-    var length = obj_array.length - 1;
+    /* array variables */   array = [];
+    /* number variables */  var mini_result, num1, num2,    length = obj_array.length - 1;
+    /* string variables */  var mathOper;
+
     console.log ("length: " + length);
 
     for (var j=0; j <= length; ++j) {   // look for "+" or "-"; the logic below doesn't work if there are no "+"s or "-"s in obj_array
@@ -290,7 +315,8 @@ function order_of_ops () {
 
                     obj_array[a - 1].value = mini_result; // insert mini_result of the division or multiplication, into the slot of what was num1
 
-                    for (var b = a; b < length; ++b) {  // now for remaining objects to the right of what was num1, shift objects to the left 2 positions
+                    for (var b = a; b < length; ++b) {
+                        // now for remaining objects to the right of what was num1, shift objects to the left 2 positions
                         obj_array[b] = obj_array[b + 2];
                         console.log("b: " + b);
                     } // end of inner most loop
@@ -313,7 +339,7 @@ function order_of_ops () {
     mathOper = obj_array[1].value;      // get num1, mathOper and num2 for revamped obj_array and return to function equal_clicked
     num2 = Number(obj_array[2].value);  //
 
-    array = [num1, mathOper, num2]  // "a" doesn't need to be returned, since it is a global variable
+    array = [num1, mathOper, num2];  // index doesn't need to be returned, since it is a global variable
     return array;
 }
 
