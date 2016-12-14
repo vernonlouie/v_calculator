@@ -1,5 +1,6 @@
-/* Calculator project, version1.1     Vernon Louie    C11.16      December 11, 2016 */
+/* Calculator project, version1.1     Vernon Louie    C11.16      December 15, 2016 */
 
+/* Global vars */
 var index = 0;              // index should always point to the last object in obj_array
 var obj_array = [];         // obj_array is the array that holds the objects of type number, operator or equalSign
 
@@ -8,6 +9,7 @@ var multi_op_index;         // used only for "operation repeat" in equal_clicked
 
 var rollover_result;        // used only for "operation rollover" in equal_clicked function
 var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
+/* end Global vars */
 
 $(document).ready(function () {
     $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
@@ -18,10 +20,10 @@ $(document).ready(function () {
 
 // 4 main functions ***************************************************************************
 function number_clicked () {
-    /* boolean variables */ var thereIsDecimal;
-    /* number variables */  /* none */
-    /* object variables */  var just_clicked;
-    /* string variables */  var numString;
+/* boolean vars */ var thereIsDecimal;
+/* number vars */  /* none */
+/* object vars */  var just_clicked;
+/* string vars */  var numString;
 
     numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
     numString = numString.trim();       // .trim Removes white space from the string/text.
@@ -49,7 +51,7 @@ function number_clicked () {
 
 
 function operator_clicked () {
-    /* string variables */  var mathOperString;
+/* string vars */  var mathOperString;
 
     mathOperString = $(this).text();    // grab the operator from the button text just clicked
     mathOperString = mathOperString.trim();
@@ -89,9 +91,9 @@ function operator_clicked () {
 
 
 function equal_clicked () { // clicking "=" usually means "do the math"
-    /* boolean variables */ var parenGood;
-    /* number variables */  var length, num1, num2, result, temp;
-    /* string variables */  var mathOper, string_result;
+/* boolean vars */ var moreThan2Numbers, parenGood;
+/* number vars */  var length, num1, num2, result, temp;
+/* string vars */  var mathOper, string_result;
 
     parenGood = check_parentheses();
     console.log("parenGood: " + parenGood);
@@ -139,14 +141,14 @@ function equal_clicked () { // clicking "=" usually means "do the math"
 
         length = obj_array.length - 1;
 
-        var moreThan2Numbers = countNumbersInArray (obj_array);
+        moreThan2Numbers = countNumbersInArray (obj_array);
 
         if (moreThan2Numbers === true) {   // don't bother with order of operations if there are only 2 numbers
             var first3_array = order_of_ops(obj_array);     // case: order of operations (Extra Operations); call order_of_ops function
             num1 = first3_array[0];             // because obj_array might have been changed by function order_of_ops
             mathOper = first3_array[1];         // num1, mathOper, num2 and length need to be reassigned just in case
             num2 = first3_array[2];             // first3_array is just an array of 3 numbers; it isn't "born" from PunchTemplate constructor
-            index = first3_array[3];
+            index = first3_array[3];            // index has changed if there was any "/" or "x"
             length = obj_array.length - 1;
         }
 
@@ -235,11 +237,7 @@ function check_first_and_last_parentheses () {  // check that the 1st and last o
     console.log("psn_last_openParen: " + psn_last_openParen + "  psn_last_closeParen: " + psn_last_closeParen);
 
     if (psn_first_openParen < psn_first_closeParen) {
-        if (psn_last_openParen < psn_last_closeParen) {
-            return true;
-        } else {
-            return false;
-        }
+        return (psn_last_openParen < psn_last_closeParen);
     } else {
         return false;
     }
@@ -270,11 +268,7 @@ function check_number_of_parentheses () {   // check that there are an equal num
         console.log("count: " + count);
     }
 
-    if (count === 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return (count === 0);
 }
 
 function check_parentheses () {
@@ -286,11 +280,7 @@ function check_parentheses () {
             var parenCountGood = check_number_of_parentheses ();
             var parenOrderGood = check_first_and_last_parentheses ();
 
-            if (parenCountGood === true && parenOrderGood === true) {
-                return true;
-            } else {
-                return false;
-            }
+            return (parenCountGood === true && parenOrderGood === true);
         }
     }
     return null;    // no parentheses were found in the equation
@@ -301,6 +291,18 @@ function cOPID (tipe, valu) {                           // cOPID = create Object
     obj_array.push(just_clicked);                       // push object just_clicked into obj_array
     index++;                                            // increase index by 1 to stay matched with the just-pushed object
     create_div_text_in_display (valu);                  // display operator or number in display area
+}
+
+function countNumbersInArray (array) {
+    var count = 0;
+    var length = array.length;
+
+    for (var i=0; i < length; i++) {
+        if (array[i].type === "number") {
+            count++;
+        }
+    }
+    return (count > 2);
 }
 
 function create_div_text_in_display (strng) {   //dynamically create h3 element, place it in display with number, operator or '=' just clicked
@@ -324,9 +326,10 @@ function do_math (number1, mathOperator, number2) {
 }
 
 function evaluateParentheses () {
-/* array variables */   var first3array = [], sliceArray = [];
-/* number variables */  var num1, num2, psn_first_openParen, psn_first_closeParen, shift, slice_length, temp,  length = obj_array.length;
-/* string variables */  var mathOper;
+/* array vars */    var first3array = [], sliceArray = [];
+/* boolean vars */  var moreThan2Numbers;
+/* number vars */   var num1, num2, psn_first_openParen, psn_first_closeParen, shift, slice_length, temp,  length = obj_array.length;
+/* string vars */   var mathOper;
 
     for (var p=0; p < length; ++p) {
         if (obj_array[p].value ===  "(" ) {
@@ -336,19 +339,21 @@ function evaluateParentheses () {
         }
     }
 
-    sliceArray = obj_array.slice(psn_first_openParen + 1, psn_first_closeParen);
+    sliceArray = obj_array.slice(psn_first_openParen + 1, psn_first_closeParen);    //get part of the equation that is between the parentheses)
     slice_length = sliceArray.length;
     console.log("sliceArray: " + sliceArray);
     num1 = Number(sliceArray[0].value);
     mathOper = sliceArray[1].value;
     num2 = Number(sliceArray[2].value);
 
-    if (slice_length > 3) {   // don't bother with order of operations if there is only 1 operator
+    moreThan2Numbers = countNumbersInArray (sliceArray);
+
+    if (moreThan2Numbers === true) {   // don't bother with order of operations if there are only 2 numbers
         first3_array = order_of_ops(sliceArray);      // case: order of operations (Extra Operations); call order_of_ops function
         num1 = first3_array[0];                 // because obj_array might have been changed by function order_of_ops
         mathOper = first3_array[1];             // num1, mathOper, num2 and length need to be reassigned just in case
         num2 = first3_array[2];                 // first3_array is just an array of 3 numbers; it isn't "born" from PunchTemplate constructor
-        slice_length = sliceArray.length;
+        slice_length = sliceArray.length;       // length of sliceArray changed if there were any "/" or "x"
     }
 
     temp = do_math (num1, mathOper, num2);
@@ -377,27 +382,11 @@ function evaluateParentheses () {
     index = index - shift;
 }
 
-function countNumbersInArray (array) {
-    var count = 0;
-    var length = array.length;
-
-    for (var i=0; i < length; i++) {
-        if (array[i].type === "number") {
-            count++;
-        }
-    }
-
-    if (count > 2) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function order_of_ops (input_array) {
-    /* array variables */   array = [];
-    /* number variables */  var mini_result, num1, num2,    a = input_array.length - 1, length = input_array.length - 1;
-    /* string variables */  var mathOper;
+/* array vars */    var array = [];
+/* number vars */   var mini_result, num1, num2,     length = input_array.length - 1,
+                    a = input_array.length - 1; /* a is initially set to equal the last index of the array, since if this function doesn't reduce the equation (reduce the array by "pop"), then the index shouldn't change.  Within the inner for loop, a gets its value set.
+/* string vars */  var mathOper;
 
     console.log ("length: " + length);
 
