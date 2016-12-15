@@ -9,6 +9,8 @@ var multi_op_index;         // used only for "operation repeat" in equal_clicked
 
 var rollover_result;        // used only for "operation rollover" in equal_clicked function
 var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
+
+var num_of_paren_pairs = 0;     // used to count how many pairs of open and close parentheses there are
 /* end Global vars */
 
 $(document).ready(function () {
@@ -26,13 +28,13 @@ function number_clicked () {
 /* string vars */  var numString;
 
     numString = $(this).text();     // get the text from the button just clicked, which in this case is a number that is of type string
-    numString = numString.trim();       // .trim Removes white space from the string/text.
+    numString = numString.trim();   // .trim Removes white space from the string/text.
 
     if (obj_array[index] !== undefined) {       // case: multiple decimals (Comprehensive Operations). check for decimal pt if there is a number
         thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in last "else if" conditional below
     }
 
-    if (obj_array[index] === undefined) {   // if this is the very first number
+    if (obj_array[index] === undefined) {   // if this is the very first number entered into display (after clearing, "C")
         just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
@@ -64,16 +66,16 @@ function operator_clicked () {
     } else if (obj_array[index] === undefined) { // case: premature operation (ADVANCED Operations); can't start with +,-,/ or x
         create_div_text_in_display ("need number!");    // do nothing except display message
 
-    } else if (obj_array[index].value === ")" && mathOperString === "()" ) {        //  ))
+    } else if (obj_array[index].value === ")" && mathOperString === "()" ) {        //  e.g. ))
         mathOperString = ")" ;
         cOPID("operator", mathOperString);
-    } else if (obj_array[index].value === ")" ) {                                   //  )+ or )x or )/ or )-
+    } else if (obj_array[index].value === ")" ) {                                   //  e.g. )+ or )x or )/ or )-
         cOPID("operator", mathOperString);
 
-    } else if (obj_array[index].type === "operator" && mathOperString === "()") {   //  (( or +( or -( or x( or /(
+    } else if (obj_array[index].type === "operator" && mathOperString === "()") {   //  e.g. (( or +( or -( or x( or /(
         mathOperString = "(" ;
         cOPID("operator", mathOperString);
-    } else if (obj_array[index].type === "number" && mathOperString === "()" ) {    //  8)
+    } else if (obj_array[index].type === "number" && mathOperString === "()" ) {    //  e.g. 8)
         mathOperString = ")" ;
         cOPID("operator", mathOperString);
     } else if (obj_array[index].value === "(" ) {
@@ -99,7 +101,7 @@ function equal_clicked () { // clicking "=" usually means "do the math"
     console.log("parenGood: " + parenGood);
 
     if (parenGood === true) {   // parenGood could also have value of "null" if there are no parentheses at all in the equation
-        evaluateParentheses();
+        evaluateAllParentheses();
     } else if (parenGood === false) {
         create_div_text_in_display ("Parentheses are not good");
     }
@@ -184,7 +186,7 @@ function equal_clicked () { // clicking "=" usually means "do the math"
     } // end of 1st else
 } // end of function equal_clicked
 
-
+/** This function is for the rest of the buttons that aren't number, operator or equal.  So that leaves "C" and "CE" */
 function special_clicked () {
     var clearKey = $(this).text();
     clearKey = clearKey.trim();
@@ -195,8 +197,9 @@ function special_clicked () {
             console.log("obj_array: " + obj_array); // using obj_array = [] leaves obj_array with definition and I want it to be undefined
         }
 
-        flag_for_op_rollover = null;            // set flag_for_op_rollover to "unused"
+        flag_for_op_rollover = null;    // set flag_for_op_rollover to "unused"
         index = 0;                      // set the index back to the beginning position
+        num_of_paren_pairs = 0;
         $(".display > h3").remove();    // destroys all h3 elements in the display
     } else {                        // CE button
         obj_array.pop();                // delete the object in the last array position
@@ -208,11 +211,12 @@ function special_clicked () {
         $("h3:last-child").remove();    // destroy the last h3 element
     }
 } // end of function special_clicked
-
 // end 4 main functions ***************************************************************************************************
 
 // sub functions and 1 constructor, PunchTemplate in alphabetical order by function name **********************************
-function check_first_and_last_parentheses () {  // check that the 1st and last open and close parentheses are in the correct order
+
+/** Checks that the 1st and last open and close parentheses are in the correct order.  You don't have something like "8))+((7=".  You have the correct number of parentheses, but they're not in the correct order. */
+function check_first_and_last_parentheses () {
     var length = obj_array.length;
     var psn_first_openParen = null, psn_first_closeParen = null, psn_last_openParen = null, psn_last_closeParen = null;
 
@@ -236,6 +240,7 @@ function check_first_and_last_parentheses () {  // check that the 1st and last o
     }
     console.log("psn_last_openParen: " + psn_last_openParen + "  psn_last_closeParen: " + psn_last_closeParen);
 
+    /* so both the first set of parentheses and the last set of parentheses must be in order to return true */
     if (psn_first_openParen < psn_first_closeParen) {
         return (psn_last_openParen < psn_last_closeParen);
     } else {
@@ -243,7 +248,8 @@ function check_first_and_last_parentheses () {  // check that the 1st and last o
     }
 }
 
-function checkForDecimal () {   // case: multiple decimals (Comprehensive Operations)
+/** case: multiple decimals (Comprehensive Operations) */
+function checkForDecimal () {
     var array_of_stringNumber = (obj_array[index].value).split(""); // returns an array of 1-character strings; arrays easier to deal with
     var length = array_of_stringNumber.length;
 
@@ -255,7 +261,8 @@ function checkForDecimal () {   // case: multiple decimals (Comprehensive Operat
     return false;   // false means there is no decimal point in the string
 }
 
-function check_number_of_parentheses () {   // check that there are an equal number of opening and closing parentheses
+/** check that there are an equal number of opening and closing parentheses */
+function check_number_of_parentheses () {
     var length = obj_array.length;
     var count = 0;
 
@@ -264,13 +271,15 @@ function check_number_of_parentheses () {   // check that there are an equal num
             count++;    // increase by 1 if there is a "(" , opening parenthesis
         } else if (obj_array[p].value ===  ")") {
             count--;    // decrease by 1 if there is a ")" , closing parenthesis
+            num_of_paren_pairs++;   // num_of_paren_pairs is used by function evaluateAllParentheses to set up for loop
         }
         console.log("count: " + count);
     }
 
-    return (count === 0);
+    return (count === 0);   // if there are an equal number of open and close parentheses, then "count" should be zero (return true)
 }
 
+/** Checks if there are any parentheses and then calls 2 functions to do further checks to see that the parentheses are in good order */
 function check_parentheses () {
     var length = obj_array.length;
 
@@ -286,13 +295,15 @@ function check_parentheses () {
     return null;    // no parentheses were found in the equation
 }
 
-function cOPID (tipe, valu) {                           // cOPID = create Object, Push, Increase index, and Display
+/** cOPID = create Object, Push, Increase index, and Display */
+function cOPID (tipe, valu) {
     var just_clicked = new PunchTemplate (tipe, valu);  // create new object from constructor
     obj_array.push(just_clicked);                       // push object just_clicked into obj_array
     index++;                                            // increase index by 1 to stay matched with the just-pushed object
     create_div_text_in_display (valu);                  // display operator or number in display area
 }
 
+/** Determines the quantity of numbers in the array.  If more than 2 numbers, then returns true. */
 function countNumbersInArray (array) {
     var count = 0;
     var length = array.length;
@@ -305,7 +316,8 @@ function countNumbersInArray (array) {
     return (count > 2);
 }
 
-function create_div_text_in_display (strng) {   //dynamically create h3 element, place it in display with number, operator or '=' just clicked
+/** dynamically creates h3 element, places it in display with number, operator or '=' just clicked */
+function create_div_text_in_display (strng) {
     var new_h3 = $("<h3>", {
         text: " " + strng + " "
     });
@@ -320,26 +332,28 @@ function do_math (number1, mathOperator, number2) {
     } else if (mathOperator === "-") {
         answer = number1 - number2;
     } else {
-        answer = number1 + number2;     // ensure that number1 & number2 are numbers and not strings, otherwise concatenation instead of addition
+        answer = number1 + number2;
+        // ensure that number1 & number2 are numbers and not strings, otherwise you will get concatenation instead of addition
     }
     return answer;
 }
 
-function evaluateParentheses () {
-/* array vars */    var first3array = [], sliceArray = [];
+/** Evaluates expressions within each set of parentheses in the correct order.  Gets rid of parentheses and shortens obj_array accordingly.  Does not do any math outside of parentheses. */
+function evaluateAllParentheses () {
+    for (var i=0; i < num_of_paren_pairs; i++)  {
+        var array = findParenthesesToEvaluate ();
+        evaluate1SetOfParentheses (array[0], array[1]);
+    }
+}
+
+/** Evaluates whatever is in 1 set of of open and close parentheses.  Replaces the parentheses and their content with the result (a number) of the evaluation into the array. */
+function evaluate1SetOfParentheses (psn_openParen, psn_closeParen) {
+/* array vars */    var first3_array = [], sliceArray = [];
 /* boolean vars */  var moreThan2Numbers;
-/* number vars */   var num1, num2, psn_first_openParen, psn_first_closeParen, shift, slice_length, temp,  length = obj_array.length;
+/* number vars */   var num1, num2, shift, slice_length, temp,  length = obj_array.length;
 /* string vars */   var mathOper;
 
-    for (var p=0; p < length; ++p) {
-        if (obj_array[p].value ===  "(" ) {
-            psn_first_openParen = p;
-        } else if (obj_array[p].value ===  ")" ) {
-            psn_first_closeParen = p;
-        }
-    }
-
-    sliceArray = obj_array.slice(psn_first_openParen + 1, psn_first_closeParen);    //get part of the equation that is between the parentheses)
+    sliceArray = obj_array.slice(psn_openParen + 1, psn_closeParen);    //get part of the equation that is between the parentheses)
     slice_length = sliceArray.length;
     console.log("sliceArray: " + sliceArray);
     num1 = Number(sliceArray[0].value);
@@ -367,12 +381,12 @@ function evaluateParentheses () {
         console.log("temp: " + temp);
     } // end of for loop
 
-    obj_array[psn_first_openParen].type = "number";
-    obj_array[psn_first_openParen].value = temp;
+    obj_array[psn_openParen].type = "number";
+    obj_array[psn_openParen].value = temp;
 
-    shift = psn_first_closeParen - psn_first_openParen;
+    shift = psn_closeParen - psn_openParen;
 
-    for (var c = (psn_first_openParen + 1);  (c + shift) < length;  c++) {
+    for (var c = (psn_openParen + 1);  (c + shift) < length;  c++) {
         obj_array[c] = obj_array[c+shift];
     }
 
@@ -382,6 +396,38 @@ function evaluateParentheses () {
     index = index - shift;
 }
 
+/** This applies to obj_array, the main array holding all the numbers and operators and parentheses.  Gets the correct set of parentheses to evaluate.  This function is called by function evaluateAllParentheses. */
+function findParenthesesToEvaluate () {
+/* array vars */    var array = [];
+/* number vars */   var psn_openParen, psn_closeParen, length = obj_array.length;
+
+    console.log("in function findParenthesesToEvaluate");
+
+    for (var p = 0; p < length; ++p) {
+        if (obj_array[p].value === "(") {
+            psn_openParen = p;
+            console.log("OpenParen: " + p);
+
+            for (var q = p + 1; q < length; ++q) {
+                if (obj_array[q].value === "(" ) {
+                    psn_openParen = q;
+                    console.log("OpenParen: " + q);
+                } else if (obj_array[q].value === ")") {
+                    psn_closeParen = q;
+                    console.log("CloseParen: " + q);
+                    break;
+                }
+            }   // break out of both inner and outer loops once we have the positions of parentheses that will be evaluated
+        break;
+        }
+    }
+
+    array[0] = psn_openParen;   // store in array, so we can pass both values to the calling function
+    array[1] = psn_closeParen;
+    return array;
+}
+
+/** Takes in an array and does order of ops on it.  From left to right, this function divides or multiplies.  Inserts the result of the division or multiplication into the 1st operand's slot, and shifts the rest of the array 2 indexes to the left.  And then shortens the array by 2.  This is for each / or x.  If the equation is all / or * (no + or -), then this function does nothing to the array. */
 function order_of_ops (input_array) {
 /* array vars */    var array = [];
 /* number vars */   var mini_result, num1, num2,     length = input_array.length - 1,
@@ -394,7 +440,7 @@ function order_of_ops (input_array) {
         console.log("j: " + j);
         if (input_array[j].value === "+" || input_array[j].value === "-") { // if only "/" and/or "x", then bypass the following for loop
 
-            for (var a = 0; a <= length; a) {   // look for division and multiplication
+            for (var a = 0; a <= length; a) {   // look for division, "/" and multiplication, "x"
                 console.log("a: " + a + "  input_array[a].value: " + input_array[a].value + "  length: " + length);
                 if (input_array[a].value === "/" || input_array[a].value === "x") {
                     num1 = input_array[a - 1].value;
@@ -419,17 +465,14 @@ function order_of_ops (input_array) {
                     a++;
                 }
             } // end of middle for loop
-
-            // if mini_result has value (that is, input_array has been shortened), then...
-            // if (mini_result !== undefined && obj_array[a].value === "=") {//     index = a;  // if input_array has been shortened, index needs to be reset to "a" to target the last obj, which should be the "="
-            // }
         } // end of 1st if
     } // end of outer for loop
-    num1 = Number(input_array[0].value);  //
-    mathOper = input_array[1].value;      // get num1, mathOper and num2 for revamped input_array and return to function equal_clicked
-    num2 = Number(input_array[2].value);  //
 
-    array = [num1, mathOper, num2, a];  // set index = a for obj_array;
+    num1 = Number(input_array[0].value);    //
+    mathOper = input_array[1].value;        // get num1, mathOper and num2 for revamped input_array and return to function equal_clicked
+    num2 = Number(input_array[2].value);    //
+
+    array = [num1, mathOper, num2, a];  // set index = a for obj_array back in function equal_clicked;
     return array;
 }
 
