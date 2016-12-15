@@ -92,11 +92,13 @@ function operator_clicked () {
 } // end of function operator_clicked
 
 
-function equal_clicked () { // clicking "=" usually means "do the math"
-/* boolean vars */ var moreThan2Numbers, parenGood;
-/* number vars */  var length, num1, num2, result, temp;
+/** When "=" is clicked, it triggers the processing of the equation.  */
+function equal_clicked () {
+/* boolean vars */ var parenGood;
+/* number vars */  var count, length, num1, num2, result, temp;
 /* string vars */  var mathOper, string_result;
 
+    // 1st, process the parentheses if there are any
     parenGood = check_parentheses();
     console.log("parenGood: " + parenGood);
 
@@ -106,6 +108,7 @@ function equal_clicked () { // clicking "=" usually means "do the math"
         create_div_text_in_display ("Parentheses are not good");
     }
 
+    // 2nd, begin processing special cases
     if (obj_array[index] === undefined) {   // case: missing operands (ADVANCED Operations)
         create_div_text_in_display ("Ready");   // basically do nothing
     } else if (obj_array[index].type === "equalSign") {    // case: operation repeat (consecutive equal signs, Comprehensive Operations)
@@ -115,21 +118,21 @@ function equal_clicked () { // clicking "=" usually means "do the math"
         mathOper = obj_array[multi_op_index].value;
         num2 = Number(obj_array[multi_op_index + 1].value);
 
-        global_result = do_math(num1, mathOper, num2);  // it's a global variable, because its value is needed for the next time thru this branch
-        string_result = "=".concat(global_result);      // concatenate "=" to result so it displays in 1 div element instead of in separate divs
+        global_result = do_math(num1, mathOper, num2);  // global variable, because its value is needed for the next time thru this branch
+        string_result = "=".concat(global_result);      // concatenate "=" to result so it displays in 1 div instead of in separate divs
         create_div_text_in_display (string_result);     // note that global_result is not pushed onto obj_array
-    } else {    // else represents all cases outside of "missing operands" and "operation repeat"
+    } else {        // else represents all cases outside of "missing operands" and "operation repeat"
         var just_clicked = new PunchTemplate ("equalSign", "=");
         obj_array.push(just_clicked);
         index++;    // global variable
 
-        // always calculate result of first 2 numbers if there is more than 1 math operator and store it into temp
+        // always calculate result of first 2 numbers and store it into temp
         num1 = Number(obj_array[0].value);  // for all cases
 
         if (obj_array[1].type !== "operator") { // case: missing operation (ADVANCED Operations)
             mathOper = "x";     // this is the case where you have only a number and an equal sign and we return num1
-            num2 = 1;
-        } else {                // normal operations
+            num2 = 1;           // so you get "num1 x 1" which results in num1
+        } else {                // mathOper and num2 for normal operations
             mathOper = obj_array[1].value;
             num2 = Number(obj_array[2].value);
         }
@@ -142,15 +145,15 @@ function equal_clicked () { // clicking "=" usually means "do the math"
         }
 
         length = obj_array.length - 1;
+        count = countNumbersInArray (obj_array);
 
-        moreThan2Numbers = countNumbersInArray (obj_array);
-
-        if (moreThan2Numbers === true) {   // don't bother with order of operations if there are only 2 numbers
+        // 3rd, do order of operations if necessary; that is, do / and x before - and +
+        if (count > 2) {        // do order of operations if there are more than 2 numbers
             var first3_array = order_of_ops(obj_array);     // case: order of operations (Extra Operations); call order_of_ops function
             num1 = first3_array[0];             // because obj_array might have been changed by function order_of_ops
             mathOper = first3_array[1];         // num1, mathOper, num2 and length need to be reassigned just in case
             num2 = first3_array[2];             // first3_array is just an array of 3 numbers; it isn't "born" from PunchTemplate constructor
-            index = first3_array[3];            // index has changed if there was any "/" or "x"
+            index = first3_array[3];            // index has changed if there was any "/" or "x" in obj_array
             length = obj_array.length - 1;
         }
 
@@ -160,13 +163,12 @@ function equal_clicked () { // clicking "=" usually means "do the math"
             rollover_result = temp;
         }
 
-        // loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed because length of obj_array in this case would only be 3 and i would fail the initial condition check
+        // 4th, do successive operations.  By now, obj_array has no parentheses.  obj_array has no multiplication or division left to process.  Any processing now is just addition and subtraction.  Loop and do left most operators first; if there are only 2 numbers with 1 operator, then this for loop is not executed because length of obj_array in this case would only be 3 and i would fail the initial condition check
         for (i=3; i < length; i+=2) { // case: successive operation & multi keys (Comprehensive Operations)
-            num1 = temp;
             mathOper = obj_array[i].value;
             num2 = Number(obj_array[i+1].value);
 
-            temp = do_math(num1, mathOper, num2);   // do 1 math operation at a time
+            temp = do_math(temp, mathOper, num2);   // do 1 math operation at a time
             console.log("temp: " + temp);
         } // end of for loop
 
@@ -185,6 +187,7 @@ function equal_clicked () { // clicking "=" usually means "do the math"
         } // end of 2nd else
     } // end of 1st else
 } // end of function equal_clicked
+
 
 /** This function is for the rest of the buttons that aren't number, operator or equal.  So that leaves "C" and "CE" */
 function special_clicked () {
@@ -248,7 +251,7 @@ function check_first_and_last_parentheses () {
     }
 }
 
-/** case: multiple decimals (Comprehensive Operations) */
+/** case: multiple decimal points (Comprehensive Operations) */
 function checkForDecimal () {
     var array_of_stringNumber = (obj_array[index].value).split(""); // returns an array of 1-character strings; arrays easier to deal with
     var length = array_of_stringNumber.length;
@@ -289,13 +292,13 @@ function check_parentheses () {
             var parenCountGood = check_number_of_parentheses ();
             var parenOrderGood = check_first_and_last_parentheses ();
 
-            return (parenCountGood === true && parenOrderGood === true);
+            return (parenCountGood === true && parenOrderGood === true);    // return false if either is false
         }
     }
     return null;    // no parentheses were found in the equation
 }
 
-/** cOPID = create Object, Push, Increase index, and Display */
+/** cOPID acronym = create Object, Push, Increase index, and Display */
 function cOPID (tipe, valu) {
     var just_clicked = new PunchTemplate (tipe, valu);  // create new object from constructor
     obj_array.push(just_clicked);                       // push object just_clicked into obj_array
@@ -313,7 +316,7 @@ function countNumbersInArray (array) {
             count++;
         }
     }
-    return (count > 2);
+    return count;
 }
 
 /** dynamically creates h3 element, places it in display with number, operator or '=' just clicked */
@@ -342,58 +345,67 @@ function do_math (number1, mathOperator, number2) {
 function evaluateAllParentheses () {
     for (var i=0; i < num_of_paren_pairs; i++)  {
         var array = findParenthesesToEvaluate ();
-        evaluate1SetOfParentheses (array[0], array[1]);
+        evaluate1SetOfParentheses (array[0], array[1]);     // pass in positions of the target parentheses
     }
 }
 
-/** Evaluates whatever is in 1 set of of open and close parentheses.  Replaces the parentheses and their content with the result (a number) of the evaluation into the array. */
+/** Evaluates whatever is in 1 set of open and close parentheses.  Replaces the parentheses and their content with the result (a number) of the evaluation into obj_array. */
 function evaluate1SetOfParentheses (psn_openParen, psn_closeParen) {
 /* array vars */    var first3_array = [], sliceArray = [];
-/* boolean vars */  var moreThan2Numbers;
-/* number vars */   var num1, num2, shift, slice_length, temp,  length = obj_array.length;
+/* boolean vars */
+/* number vars */   var count, num1, num2, shift, slice_length, temp,  length = obj_array.length;
 /* string vars */   var mathOper;
 
     sliceArray = obj_array.slice(psn_openParen + 1, psn_closeParen);    //get part of the equation that is between the parentheses)
-    slice_length = sliceArray.length;
     console.log("sliceArray: " + sliceArray);
-    num1 = Number(sliceArray[0].value);
-    mathOper = sliceArray[1].value;
-    num2 = Number(sliceArray[2].value);
 
-    moreThan2Numbers = countNumbersInArray (sliceArray);
+    count = countNumbersInArray (sliceArray);
 
-    if (moreThan2Numbers === true) {   // don't bother with order of operations if there are only 2 numbers
+    if (count > 2) {   // don't bother with order of operations if there are only 2 numbers
         first3_array = order_of_ops(sliceArray);      // case: order of operations (Extra Operations); call order_of_ops function
+
         num1 = first3_array[0];                 // because obj_array might have been changed by function order_of_ops
         mathOper = first3_array[1];             // num1, mathOper, num2 and length need to be reassigned just in case
         num2 = first3_array[2];                 // first3_array is just an array of 3 numbers; it isn't "born" from PunchTemplate constructor
-        slice_length = sliceArray.length;       // length of sliceArray changed if there were any "/" or "x"
+
+      /* in case the expression inside the parenthesis is just one number and nothing else; this is for when you have more parentheses surrounding an expression than is needed; e.g. ((7+3)) becomes (10) and according to the logic, (10) still needs to be evaluated since there are parentheses around it, but (10) is missing an operator and the second operand. So this "else if" supplies (10) with an operator and second operand, so when we call function do_math below, we call it properly with 3 parameters */
+    } else if (count === 1) {
+        num1 = sliceArray[0].value;
+        mathOper = "x";
+        num2 = 1;               // so you get "num1 x 1" which results in the variable temp (see below) being equal to num1 (desired)
+    } else {
+        num1 = Number(sliceArray[0].value);
+        mathOper = sliceArray[1].value;
+        num2 = Number(sliceArray[2].value);
     }
 
     temp = do_math (num1, mathOper, num2);
+    slice_length = sliceArray.length;
 
     for (i=3; i < slice_length; i+=2) { // case: successive operation & multi keys (Comprehensive Operations)
-        num1 = temp;
         mathOper = sliceArray[i].value;
         num2 = Number(sliceArray[i+1].value);
 
-        temp = do_math(num1, mathOper, num2);   // do 1 math operation at a time
+        temp = do_math(temp, mathOper, num2);   // do 1 math operation at a time
         console.log("temp: " + temp);
-    } // end of for loop
+    }   // after for loop, the expression inside the parentheses has been reduced to a single value, temp
 
     obj_array[psn_openParen].type = "number";
-    obj_array[psn_openParen].value = temp;
+    obj_array[psn_openParen].value = temp;      // store temp into obj_array at position of what was the open parenthesis
 
+    // calculate how much to "shift" the objects that were to the right of the evaluated set of parentheses
     shift = psn_closeParen - psn_openParen;
 
     for (var c = (psn_openParen + 1);  (c + shift) < length;  c++) {
-        obj_array[c] = obj_array[c+shift];
+        obj_array[c] = obj_array[c+shift];      // now shift or copy those objects to the left
     }
 
     for (var d=0; d < shift; d++) {
         obj_array.pop();
+        // now delete the objects that were just shifted in the previous for loop, otherwise there will be two sets of those shifted objects
     }
-    index = index - shift;
+
+    index = index - shift;  // update index, global variable, to point at the last object in obj_array
 }
 
 /** This applies to obj_array, the main array holding all the numbers and operators and parentheses.  Gets the correct set of parentheses to evaluate.  This function is called by function evaluateAllParentheses. */
@@ -405,9 +417,10 @@ function findParenthesesToEvaluate () {
 
     for (var p = 0; p < length; ++p) {
         if (obj_array[p].value === "(") {
-            psn_openParen = p;
+            psn_openParen = p;              // gets the 1st open parenthesis from left to right
             console.log("OpenParen: " + p);
 
+            /* once the 1st open parenthesis is found, keep on searching the rest of obj_array until a closing parenthesis is found.  If there are more open parentheses between the 1st open parenthesis and the 1st closing parenthesis, then replace what was the position of the 1st open parenthesis with the position of the next open parenthesis and so on. */
             for (var q = p + 1; q < length; ++q) {
                 if (obj_array[q].value === "(" ) {
                     psn_openParen = q;
@@ -422,7 +435,7 @@ function findParenthesesToEvaluate () {
         }
     }
 
-    array[0] = psn_openParen;   // store in array, so we can pass both values to the calling function
+    array[0] = psn_openParen;   // store in array, so we can pass both array indices/positions to the calling function
     array[1] = psn_closeParen;
     return array;
 }
@@ -431,7 +444,7 @@ function findParenthesesToEvaluate () {
 function order_of_ops (input_array) {
 /* array vars */    var array = [];
 /* number vars */   var mini_result, num1, num2,     length = input_array.length - 1,
-                    a = input_array.length - 1; /* a is initially set to equal the last index of the array, since if this function doesn't reduce the equation (reduce the array by "pop"), then the index shouldn't change.  Within the inner for loop, a gets its value set.
+                    a = input_array.length - 1; /* a is initially set to equal the last index of the array, since if this function doesn't reduce the equation (reduce the array by "pop"), then the index shouldn't change.  Within the inner for loop, "a" gets its value set.
 /* string vars */  var mathOper;
 
     console.log ("length: " + length);
@@ -482,8 +495,7 @@ function PunchTemplate (type, value) {  // PunchTemplate as in punching a button
 }
 
 
-
-/*************************************          Functions that I once used          **********************/
+/***********************************************************/
 
 
 
