@@ -34,17 +34,29 @@ function number_clicked () {
         thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in last "else if" conditional below
     }
 
-    if (obj_array[index] === undefined) {   // if this is the very first number entered into display (after clearing, "C")
+    if (obj_array[index] === undefined && numString === "negative") {
+        just_clicked = new PunchTemplate ("number", "-");
+        obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
+        create_div_text_in_display (obj_array[index].value);
+    } else if (obj_array[index] === undefined) {   // if this is the very first number entered into display (after clearing, "C")
         just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
-    } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
-        create_div_text_in_display (numString);
-        create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
+    // } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
+    //     create_div_text_in_display (numString);
+    //     create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
+    } else if (numString === "negative") {
+        cOPID ("number", "-");
     } else if (obj_array[index].type === "operator") {
-        cOPID("number", numString);
+        cOPID ("number", numString);
     } else if (numString === "." && thereIsDecimal === true) {  // case: multiple decimal points
         console.log("no decimal point added");          // nothing happens, not adding to obj_array nor appending to current number
+    } else if (obj_array[index].type = "number") { // append number just clicked to already existing number in current object
+        obj_array[index].value = obj_array[index].value + numString;
+        $(".container1 .display h3:last-child").text(obj_array[index].value);
+    } else if ( (obj_array[index - 1].value === "/" && obj_array[index].value === "0") && numString !== ".") {
+        create_div_text_in_display (numString);
+        create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
     } else {    // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
         obj_array[index].value = obj_array[index].value + numString;
         $(".container1 .display h3:last-child").text(obj_array[index].value);
