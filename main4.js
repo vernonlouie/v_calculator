@@ -34,7 +34,7 @@ function number_clicked () {
         thereIsDecimal = checkForDecimal ();    // thereIsDecimal used later in last "else if" conditional below
     }
 
-    if (obj_array[index] === undefined && numString === "negative") {
+    if (obj_array[index] === undefined && numString === "+/-") {
         just_clicked = new PunchTemplate ("number", "-");
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);
@@ -45,7 +45,9 @@ function number_clicked () {
     // } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
     //     create_div_text_in_display (numString);
     //     create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
-    } else if (numString === "negative") {
+    } else if ((obj_array[index].value === "-" && obj_array[index].type === "number") && numString === "+/-") {
+        deleteLastH3();
+    } else if (numString === "+/-") {
         cOPID ("number", "-");
     } else if (obj_array[index].type === "operator") {
         cOPID ("number", numString);
@@ -58,7 +60,7 @@ function number_clicked () {
         create_div_text_in_display (numString);
         create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
     } else {    // append number just clicked to what is already in the "value" property of the object, which should be a string of numbers
-        obj_array[index].value = obj_array[index].value + numString;
+        obj_array[index].value += numString;
         $(".container1 .display h3:last-child").text(obj_array[index].value);
     }
 } // end of function number_clicked
@@ -217,13 +219,7 @@ function special_clicked () {
         num_of_paren_pairs = 0;
         $(".display > h3").remove();    // destroys all h3 elements in the display
     } else {                        // CE button
-        obj_array.pop();                // delete the object in the last array position
-
-        if (index !== 0) {
-            index--;                    // if clearing the 1st number/object, don't want to go index of -1, since all arrays start at 0
-        }
-
-        $("h3:last-child").remove();    // destroy the last h3 element
+        deleteLastH3 ();
     }
 } // end of function special_clicked
 // end 4 main functions ***************************************************************************************************
@@ -337,6 +333,16 @@ function create_div_text_in_display (strng) {
         text: " " + strng + " "
     });
     $(".container1 .display").append(new_h3);
+}
+
+/** removes the last element in the array; is basically the "CE" button */
+function deleteLastH3 () {
+    obj_array.pop();                // delete the object in the last array position
+    $("h3:last-child").remove();    // destroy the last h3 element
+
+    if (index !== 0) {
+        index--;            // if clearing 1st number/object, don't want index of -1, since all arrays start at 0
+    }
 }
 
 function do_math (number1, mathOperator, number2) {
