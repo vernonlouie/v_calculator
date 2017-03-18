@@ -1,4 +1,4 @@
-/* Calculator project, version1.1     Vernon Louie    C11.16      December 15, 2016 */
+/* Calculator      Vernon Louie       December 2016 */
 
 /* Global vars */
 var index = 0;              // index should always point to the last object in obj_array

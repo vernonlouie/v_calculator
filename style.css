@@ -1,8 +1,7 @@
-/*  Calculator project, version1    Vernon Louie    C11.16      December 15, 2016   */
+/*  Calculator project    Vernon Louie         December 2016   */
 
 h3, h4 {
     display:            inline-block;
-    /*border:             1px darkmagenta dashed;*/
 }
 
 h4 {
@@ -10,79 +9,113 @@ h4 {
 }
 
 .container1 {
-    height:             80vh;
+    height:             670px;
     width:              80vw;
-    background-color:   darkblue;
+    background-color:   gray;
     margin:             auto;
+    margin-top:         10px;
+    border:             dimgrey 0.4em solid;
 }
 
 .display {
     height:             19%;
     width:              90%;
-    background-color:   lightblue;
+    background-color:   lightgrey;
     margin:             auto;
     margin-bottom:      0.5em;
+    margin-top:         0.5em;
+    padding-top:        1em;
     text-align:         left;
     border-radius:      1em;
+    border:             0.4em darkgray solid;
+    position:           relative;
+    top:                0.2em;
+}
 
+.all_buttons {
+    display:    flex;
+    flex-wrap:  wrap;
+    height:     500px;
+    margin:     1em;
+
+}
+
+.all_buttons button {
+    flex:   1 1 25%;
+    height: 100px;
+    font-size:  2em;
 }
 
 .button_area {
-    height:             79%;
-    width:              90%;
-    margin:             auto;
-    vertical-align:     middle;
-}
-
-.button {
-    height:             99%;
-}
-
-.button_row {
-    height:             20%;
-    margin:             0.1em;
+    height: 80%;
 }
 
 .special {
-    height:             98%;
-    width:              98%;
-    background-color:   blue;
-    display:            inline-block;
-    text-align:         center;
-    color:              white;
-    border-radius:      2em;
-    border:             lightyellow 0.2em solid;
-}
-
-.number, .equal {
-    height:             98%;
-    width:              98%;
-    background-color:   lightyellow;
-    display:            inline-block;
-    text-align:         center;
-    border-radius:      2em;
-    border:             gold 0.2em solid;
-}
-
-.green {
-    background-color:   lightgreen;
+    color:  red;
 }
 
 .operator {
-    position:       relative;
-    height:             98%;
-    width:              98%;
-    background-color:   red;
-    display:            inline-block;
-    text-align:         center;
-    color:              white;
-    border-radius:      2em;
-    border:             black 0.2em solid;
+    color:  blue;
 }
 
-h1, h2, h3 {
-    position:   absolute;
-    -ms-transform:  translate(1em, 2em);
-    -webkit-transform:  translate(1em, 2em);
-    transform:      translate(1em, 2em);
+.equal {
+    color:  green;
 }
+
+
+/*.button_area {*/
+    /*height:             79%;*/
+    /*width:              90%;*/
+    /*margin:             auto;*/
+    /*vertical-align:     middle;*/
+/*}*/
+
+/*.button {*/
+    /*height:             99%;*/
+/*}*/
+
+/*.button_row {*/
+    /*height:             20%;*/
+    /*margin:             0.1em;*/
+/*}*/
+
+/*.special {*/
+    /*height:             98%;*/
+    /*width:              98%;*/
+    /*background-color:   blue;*/
+    /*display:            inline-block;*/
+    /*text-align:         center;*/
+    /*color:              white;*/
+    /*border-radius:      2em;*/
+    /*border:             lightyellow 0.2em solid;*/
+/*}*/
+
+/*.number, .equal {*/
+    /*height:             98%;*/
+    /*width:              98%;*/
+    /*background-color:   lightyellow;*/
+    /*display:            inline-block;*/
+    /*text-align:         center;*/
+    /*border-radius:      2em;*/
+    /*border:             gold 0.2em solid;*/
+/*}*/
+
+/*.operator {*/
+    /*position:       relative;*/
+    /*height:             98%;*/
+    /*width:              98%;*/
+    /*background-color:   red;*/
+    /*display:            inline-block;*/
+    /*text-align:         center;*/
+    /*color:              white;*/
+    /*border-radius:      2em;*/
+    /*border:             black 0.2em solid;*/
+/*}*/
+
+/*h1, h2, h3 {*/
+    /*position:   absolute;*/
+    /*-ms-transform:  translate(1em, 2em);*/
+    /*-webkit-transform:  translate(1em, 2em);*/
+    /*transform:      translate(1em, 2em);*/
+/*}*/
+
