@@ -1,4 +1,4 @@
-<!-- Calculator project, version1     Vernon Louie    C11.16      December 6, 2016 -->
+<!-- Calculator     Vernon Louie      December 2016 -->
 
 <!doctype html>
 <html>
@@ -7,7 +7,7 @@
         <title> calculator </title>
 
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"> </script>
-        <script src="main3.js"> </script>
+        <script src="main.js"> </script>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <link type="text/css" rel = "stylesheet" href="style.css">
@@ -20,128 +20,37 @@
             </div>
 
             <div class = "button_area">
-
-                <div class = "button_row">                  <!-- ROW 1 -->
-                    <div class="col-xs-6 button">
-                        <div class = "special">
-                            <h2> C </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-6 button">
-                        <div class = "special">
-                            <h2> CE </h2>
-                        </div>
-                    </div>
-                </div>                                      <!-- end ROW 1 -->
-
-                <div class = "button_row">                  <!-- ROW 2 -->
-                    <div class="col-xs-3 button">
-                        <div class = "number" >
-                            <h2> 7 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 8 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 9 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "operator">
-                            <h2> / </h2>
-                        </div>
-                    </div>
-                </div>                                      <!-- end ROW 2 -->
-
-                <div class = "button_row">                  <!-- ROW 3 -->
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 4 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 5 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 6 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "operator">
-                            <h2> x </h2>
-                        </div>
-                    </div>
-                </div>                                      <!-- end ROW 3 -->
-
-                <div class = "button_row">                  <!-- ROW 4 -->
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 1 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 2 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 3 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "operator">
-                            <h1> - </h1>
-                        </div>
-                    </div>
-                </div>                                      <!-- end ROW 4 -->
-
-                <div class = "button_row">                  <!-- ROW 5 -->
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h2> 0 </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "number">
-                            <h1> . </h1>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "equal green">
-                            <h2> = </h2>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-3 button">
-                        <div class = "operator">
-                            <h2> + </h2>
-                        </div>
-                    </div>
-                </div>                                      <!-- end ROW 5 -->
-
+                <div class = "all_buttons">                             <!-- ROW 1 -->
+                    <button type="button" class = "special"> <b> C </b> </button>
+                    <button type="button" class = "special"> CE </button>
+                    <button type="button" class = "number" id = "negative"> +/- </button>
+                    <button type="button" class = "operator"> () </button>
+                                                                        <!-- ROW 2 -->
+                    <button type="button" class = "number"> 7 </button>
+                    <button type="button" class = "number"> 8 </button>
+                    <button type="button" class = "number"> 9 </button>
+                    <button type="button" class = "operator"> / </button>
+                                                                        <!-- ROW 3 -->
+                    <button type="button" class = "number"> 4 </button>
+                    <button type="button" class = "number"> 5 </button>
+                    <button type="button" class = "number"> 6 </button>
+                    <button type="button" class = "operator"> x </button>
+                                                                        <!-- ROW 4 -->
+                    <button type="button" class = "number"> 1 </button>
+                    <button type="button" class = "number"> 2 </button>
+                    <button type="button" class = "number"> 3 </button>
+                    <button type="button" class = "operator"> - </button>
+                                                                        <!-- ROW 5 -->
+                    <button type="button" class = "number"> 0 </button>
+                    <button type="button" class = "number"> . </button>
+                    <button type="button" class = "equal"> = </button>
+                    <button type="button" class = "operator"> + </button>
+                </div> <!-- end all_buttons div -->
             </div> <!-- end button_area div -->
+
+            <a href="https://docs.google.com/spreadsheets/d/1HRpRqdyQrax5vgwrVatcOxSxly6GHXXfZuzc0lb9Tfg/pubhtml#" target="_blank">Click here for list of calculator functions</a>
+            <p>+/-: toggle for negative number</p>
         </div>  <!-- end container1 div  -->
     </body>
-
 </html>
 
