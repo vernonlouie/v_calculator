@@ -46,6 +46,24 @@ h4 {
     font-size:  2em;
 }
 
+button:hover {
+    background-color:   white;
+}
+
+.tiptext {
+    visibility:         hidden;
+    background-color:   black;
+    color:              white;
+    text-align:         center;
+    border-radius:      1em;
+    position:           absolute;
+    z-index:            1;
+}
+
+.button_area:hover .tiptext {
+    visibility: visible;
+}
+
 .button_area {
     height: 80%;
 }

@@ -10,11 +10,11 @@ var multi_op_index;         // used only for "operation repeat" in equal_clicked
 var rollover_result;        // used only for "operation rollover" in equal_clicked function
 var flag_for_op_rollover = null;    //flag to see if rollover_result needs to be set to temp or not in equal_clicked function
 
-var num_of_paren_pairs = 0;     // used to count how many pairs of open and close parentheses there are
+var num_of_paren_pairs = 0;         // used to count how many pairs of open and close parentheses there are
 /* end Global vars */
 
 $(document).ready(function () {
-    $(".number").click(number_clicked);         // Call function number_clicked when clicking on a number button (including decimal point)
+    $(".number").click(number_clicked);         // when clicking on a number, decimal point or +/-)
     $(".operator").click(operator_clicked);     // for any 4 of the operator (/ x - +) buttons
     $(".equal").click(equal_clicked);           // for equal "=" sign
     $(".special").click(special_clicked);       // for the clear keys (C and CE)
@@ -42,9 +42,9 @@ function number_clicked () {
         just_clicked = new PunchTemplate ("number", numString);
         obj_array.push(just_clicked);       // don't increase index by 1, since index is already set correctly for first element (index = 0)
         create_div_text_in_display (obj_array[index].value);    // create h3 element, place it in display with the number just clicked
-    // } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
-    //     create_div_text_in_display (numString);
-    //     create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
+    } else if (obj_array[index].value === "/" && numString === "0") {   // case: division by zero (Comprehensive Operations)
+        create_div_text_in_display (numString);
+        create_div_text_in_display ("Error - division by zero.  Click C to clear!!");
     } else if ((obj_array[index].value === "-" && obj_array[index].type === "number") && numString === "+/-") {
         deleteLastH3();
     } else if (numString === "+/-") {
@@ -87,6 +87,9 @@ function operator_clicked () {
         cOPID("operator", mathOperString);
 
     } else if (obj_array[index].type === "operator" && mathOperString === "()") {   //  e.g. (( or +( or -( or x( or /(
+        mathOperString = "(" ;
+        cOPID("operator", mathOperString);
+    } else if (obj_array[index].value === "-" && mathOperString === "()" ) {        //  e.g. -(n x m)
         mathOperString = "(" ;
         cOPID("operator", mathOperString);
     } else if (obj_array[index].type === "number" && mathOperString === "()" ) {    //  e.g. 8)
