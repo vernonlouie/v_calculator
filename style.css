@@ -1,4 +1,4 @@
-/*  Calculator project    Vernon Louie         December 2016   */
+/*  Calculator project    Vernon Louie         December 2016 thru April 2017  */
 
 body {
     font-family:    Verdana, Arial;
@@ -34,7 +34,7 @@ h3 {
 .display {
     height:             24%;
     width:              90%;
-    font-family:        dig7_mono_italic;
+    font-family:        dig7_mono_italic, Verdana, Arial;
     background-color:   lightgrey;
     margin:             auto;
     margin-bottom:      0.5em;
@@ -92,11 +92,14 @@ button:hover {
 
 hr {
     margin:             0.2em auto;
-    background-color:   slategray;
+    background-color:   darkgray;
     width:              80%;
     height:             0.1em;
 }
 
+/******************** Responsiveness ***********************/
+
+/* For mobile landscape */
 @media only screen and (orientation: landscape) {
     h3 {
         font-size:  1.6em;
@@ -117,6 +120,7 @@ hr {
     }
 }
 
+/* For non-mobile (to prevent non-mobile from using mobile landscape) */
 @media only screen and (min-width: 870px) {
     h3 {
         font-size: 2.5em;
@@ -135,6 +139,7 @@ hr {
     }
 }
 
+/* For mobile portrait */
 @media only screen and (max-width: 479px) {
     h3 {
         font-size: 2em;
@@ -152,6 +157,8 @@ hr {
         height: 73%;
     }
 }
+
+/************** End of current CSS *******************/
 
 /* may incorporate tool tips later */
 .tiptext {
