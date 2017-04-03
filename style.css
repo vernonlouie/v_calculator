@@ -1,5 +1,9 @@
 /*  Calculator project    Vernon Louie         December 2016   */
 
+body {
+    font-family:    Verdana, Arial;
+}
+
 /* found these fonts on http://www.fontspace.com/category/calculator */
 @font-face {
     font-family:    "digital-7";
@@ -13,8 +17,8 @@
 
 h3, h4 {
     display:    inline-block;
-    font-size:  2.5em;
-    margin:     5px 0 10px 0;
+    font-size:  2em;
+    margin:     1px 0 1px 0;
 }
 
 h4 {
@@ -22,7 +26,7 @@ h4 {
 }
 
 .container1 {
-    height:             670px;
+    height:             75vh;
     width:              80vw;
     background-color:   gray;
     margin:             auto;
@@ -31,7 +35,7 @@ h4 {
 }
 
 .display {
-    height:             19%;
+    height:             24%;
     width:              90%;
     font-family:        dig7_mono_italic;
     background-color:   lightgrey;
@@ -44,20 +48,20 @@ h4 {
     border:             0.4em darkgray solid;
     position:           relative;
     top:                0.2em;
+    overflow:           auto;
 }
 
 .all_buttons {
     display:    flex;
     flex-wrap:  wrap;
-    height:     500px;
+    height:     86%;
     margin:     1em;
-
 }
 
 .all_buttons button {
-    flex:   1 1 25%;
-    height: 100px;
-    font-size:  2em;
+    flex:       1 1 25%;
+    height:     20%;
+    font-size:  2.5em;
 }
 
 button:hover {
@@ -74,7 +78,7 @@ button:hover {
     z-index:            1;
 }
 
-.button_area:hover .tiptext {
+.tooltip:hover .tiptext{
     visibility: visible;
 }
 
@@ -92,6 +96,14 @@ button:hover {
 
 .equal {
     color:  green;
+}
+
+@media only screen and (max-width: 479px) {
+    h3, h4 {
+        font-size: 4em;
+    }
+
+
 }
 
 
