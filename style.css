@@ -2,6 +2,7 @@
 
 body {
     font-family:    Verdana, Arial;
+    background:     linear-gradient(black, gray);
 }
 
 /* found these fonts on http://www.fontspace.com/category/calculator */
@@ -15,14 +16,10 @@ body {
     src:            url("digital-7_mono_italic.ttf");
 }
 
-h3, h4 {
+h3 {
     display:    inline-block;
-    font-size:  2em;
+    font-size:  3em;
     margin:     1px 0 1px 0;
-}
-
-h4 {
-    text-align:         right;
 }
 
 .container1 {
@@ -54,7 +51,7 @@ h4 {
 .all_buttons {
     display:    flex;
     flex-wrap:  wrap;
-    height:     86%;
+    height:     96%;
     margin:     1em;
 }
 
@@ -68,22 +65,8 @@ button:hover {
     background-color:   white;
 }
 
-.tiptext {
-    visibility:         hidden;
-    background-color:   black;
-    color:              white;
-    text-align:         center;
-    border-radius:      1em;
-    position:           absolute;
-    z-index:            1;
-}
-
-.tooltip:hover .tiptext{
-    visibility: visible;
-}
-
 .button_area {
-    height: 80%;
+    height: 75%;
 }
 
 .special {
@@ -98,68 +81,147 @@ button:hover {
     color:  green;
 }
 
-@media only screen and (max-width: 479px) {
-    h3, h4 {
-        font-size: 4em;
-    }
-
-
+.lightgray {
+    color:  lightgray;
 }
 
+.clarifications p, a {
+    font-size:  1.6em;
+    margin:     0.2em 0;
+}
 
-/*.button_area {*/
-    /*height:             79%;*/
-    /*width:              90%;*/
-    /*margin:             auto;*/
-    /*vertical-align:     middle;*/
-/*}*/
+hr {
+    margin:             0.2em auto;
+    background-color:   slategray;
+    width:              80%;
+    height:             0.1em;
+}
 
-/*.button {*/
-    /*height:             99%;*/
-/*}*/
+@media only screen and (orientation: landscape) {
+    h3 {
+        font-size:  1.6em;
+        margin:     0;
+    }
 
-/*.button_row {*/
-    /*height:             20%;*/
-    /*margin:             0.1em;*/
-/*}*/
+    .clarifications p, a {
+        font-size:  1.1em;
+        margin:     0;
+    }
 
-/*.special {*/
-    /*height:             98%;*/
-    /*width:              98%;*/
-    /*background-color:   blue;*/
-    /*display:            inline-block;*/
-    /*text-align:         center;*/
-    /*color:              white;*/
-    /*border-radius:      2em;*/
-    /*border:             lightyellow 0.2em solid;*/
-/*}*/
+    .all_buttons button {
+        font-size:  1.5em;
+    }
 
-/*.number, .equal {*/
-    /*height:             98%;*/
-    /*width:              98%;*/
-    /*background-color:   lightyellow;*/
-    /*display:            inline-block;*/
-    /*text-align:         center;*/
-    /*border-radius:      2em;*/
-    /*border:             gold 0.2em solid;*/
-/*}*/
+    .button_area {
+        height: 70%;
+    }
+}
 
-/*.operator {*/
-    /*position:       relative;*/
-    /*height:             98%;*/
-    /*width:              98%;*/
-    /*background-color:   red;*/
-    /*display:            inline-block;*/
-    /*text-align:         center;*/
-    /*color:              white;*/
-    /*border-radius:      2em;*/
-    /*border:             black 0.2em solid;*/
-/*}*/
+@media only screen and (min-width: 870px) {
+    h3 {
+        font-size: 2.5em;
+    }
 
-/*h1, h2, h3 {*/
-    /*position:   absolute;*/
-    /*-ms-transform:  translate(1em, 2em);*/
-    /*-webkit-transform:  translate(1em, 2em);*/
-    /*transform:      translate(1em, 2em);*/
-/*}*/
+    .clarifications p, a {
+        font-size:  1.6em;
+    }
+
+    .all_buttons button {
+        font-size:  2.5em;
+    }
+
+    .button_area {
+        height: 75%;
+    }
+}
+
+@media only screen and (max-width: 479px) {
+    h3 {
+        font-size: 2em;
+    }
+
+    .clarifications p, a {
+        font-size:  1.1em;
+    }
+
+    .all_buttons button {
+        font-size:  2em;
+    }
+
+    .button_area {
+        height: 73%;
+    }
+}
+
+/* may incorporate tool tips later */
+.tiptext {
+    visibility:         hidden;
+    background-color:   black;
+    color:              white;
+    text-align:         center;
+    border-radius:      1em;
+    position:           absolute;
+    z-index:            1;
+}
+
+.tooltip:hover .tiptext{
+    visibility: visible;
+}
+
+/***** Old styling before flex *****/
+    /*.button_area {*/
+        /*height:             79%;*/
+        /*width:              90%;*/
+        /*margin:             auto;*/
+        /*vertical-align:     middle;*/
+    /*}*/
+
+    /*.button {*/
+        /*height:             99%;*/
+    /*}*/
+
+    /*.button_row {*/
+        /*height:             20%;*/
+        /*margin:             0.1em;*/
+    /*}*/
+
+    /*.special {*/
+        /*height:             98%;*/
+        /*width:              98%;*/
+        /*background-color:   blue;*/
+        /*display:            inline-block;*/
+        /*text-align:         center;*/
+        /*color:              white;*/
+        /*border-radius:      2em;*/
+        /*border:             lightyellow 0.2em solid;*/
+    /*}*/
+
+    /*.number, .equal {*/
+        /*height:             98%;*/
+        /*width:              98%;*/
+        /*background-color:   lightyellow;*/
+        /*display:            inline-block;*/
+        /*text-align:         center;*/
+        /*border-radius:      2em;*/
+        /*border:             gold 0.2em solid;*/
+    /*}*/
+
+    /*.operator {*/
+        /*position:       relative;*/
+        /*height:             98%;*/
+        /*width:              98%;*/
+        /*background-color:   red;*/
+        /*display:            inline-block;*/
+        /*text-align:         center;*/
+        /*color:              white;*/
+        /*border-radius:      2em;*/
+        /*border:             black 0.2em solid;*/
+    /*}*/
+
+    /*h1, h2, h3 {*/
+        /*position:   absolute;*/
+        /*-ms-transform:  translate(1em, 2em);*/
+        /*-webkit-transform:  translate(1em, 2em);*/
+        /*transform:      translate(1em, 2em);*/
+    /*}*/
 
