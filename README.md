@@ -1,29 +1,39 @@
 # Calculator
+This app does what a basic calculator does and a few more things.
 
-## Version 1
-#### Description
-Version 1 takes the layout and basic button click functionality built in the 2 previous versions and then ties in the calculation functionality. This version works toward more OOP understandings
-by taking the inputs from the calculator and inserting them into objects and then those objects into an array.
+#### Link to live demo:
+https://vernonlouie.github.io/v_calculator/
 
+#### Source Code
+https://github.com/vernonlouie/v_calculator
 
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v1#getting-started">Getting Started</a>
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v1#scope">View Scope</a>
+## Features
+a) basic operations (addtion, subtraction, division, multipliation)
 
-## Version 0.5
-#### Description
-Version 0.5 adds in user functionality without needing to write the underneath logic of a calculator. With the introduction
-to the calculator object the user can interact with the object to receive the values after calculation has been completed.
+b) comprehensive operations (successive, decimals, multiple decimals, multiple operation, changing operation, operation repeat, operation rollover, successive multi operation, division by zero)
 
+c) advanced operations 1 (premature operation, partial operand, missing operation, missing operand)
 
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.5#getting-started">Getting Started</a>
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.5#scope">View Scope</a>
+d) advanced operations 2 (order of operations, parentheses, negative numbers)
 
-## Version 0.1
-#### Description
-Version 0.1 is the starting point of the Calculator Project. You must create the base structure and styles, using bootstrap as you deem necessary. For this version we are looking to see that you
-understand how to create the basic structure of a web application, style it, and make it reasonably responsive.  No functionality will be encoded with this version.
+Link to calculator functionality:
+https://docs.google.com/document/d/1x3U2spttq17miGLMfiNpyfGcl1R34BcZWr2SEEAnyvk/pub
 
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.1#getting-started">Getting Started</a>
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.1#scope">View Scope</a>
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.1#design">View Design</a>
-- <a href="https://github.com/Learning-Fuze/calculator/tree/v0.1#assignments---aka-criteria-for-success-on-this-version-of-the-project">View Assignments</a>
+## Planned/Possible Additions
+1) correct known bugs:
+
+	a) negative with open parenthesis.  e.g. -(8+4)=
+	
+	b) division by positive decimal number between 0 and 1.  e.g. 52/0.344=
+2) memory function - place answer into memory and recall when needed
+3) programming this later as a state machine
+
+## What I Learned
+- Code that is repeated should be moved into a function and called as a function.  This minimizes code length and makes for easier reading.
+- I have a much better understanding of the sequencing of if - else if conditional statements.
+- How to access properties of an object.
+- How to manipulate an array and array operations.
+- How to increment a "for loop" nontraditionally.
+- Using a flex box.
+- Programming calculators is not easy, especially when accounting for user errors.
+
