@@ -51,7 +51,7 @@ h3 {
 .all_buttons {
     display:    flex;
     flex-wrap:  wrap;
-    height:     96%;
+    height:     94%;
     margin:     1em;
 }
 
@@ -100,15 +100,20 @@ hr {
 /******************** Responsiveness ***********************/
 
 /* For mobile landscape */
-@media only screen and (orientation: landscape) {
+@media only screen and (orientation: landscape) and (max-width: 700px) {
     h3 {
         font-size:  1.6em;
         margin:     0;
     }
 
+    .clarifications {
+        position:   relative;
+        top:        0.6em;
+    }
+
     .clarifications p, a {
         font-size:  1.1em;
-        margin:     0;
+        margin-top: -5px;
     }
 
     .all_buttons button {
@@ -121,7 +126,7 @@ hr {
 }
 
 /* For non-mobile (to prevent non-mobile from using mobile landscape) */
-@media only screen and (min-width: 870px) {
+@media only screen and (min-width: 700px) {
     h3 {
         font-size: 2.5em;
     }
@@ -135,12 +140,12 @@ hr {
     }
 
     .button_area {
-        height: 74%;
+        height: 73%;
     }
 }
 
 /* For mobile portrait */
-@media only screen and (max-width: 479px) {
+@media only screen and (max-width: 500px) {
     h3 {
         font-size: 2em;
     }
